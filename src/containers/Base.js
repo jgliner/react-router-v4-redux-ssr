@@ -14,10 +14,13 @@ class Base extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.renderCount = 0;
   }
 
   render() {
+    this.renderCount++;
+    console.log('RENDERS:', this.renderCount)
     return (
       <div className="app-base">
         <h1>Base</h1>
