@@ -11,3 +11,10 @@ export function setApiData(apiData) {
     apiData,
   };
 }
+
+export function setDynamicApiData(dynamicApiData) {
+  return {
+    type: 'SET_DYNAMIC_API_DATA',
+    dynamicApiData,
+  };
+}

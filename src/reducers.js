@@ -18,9 +18,19 @@ function apiData(state = {}, action) {
   }
 }
 
+function dynamicApiData(state = {}, action) {
+  switch (action.type) {
+    case 'SET_DYNAMIC_API_DATA':
+      return action.dynamicApiData || state;
+    default:
+      return state;
+  }
+}
+
 const reducers = {
   selectedItem,
   apiData,
+  dynamicApiData,
 };
 
 export default reducers;

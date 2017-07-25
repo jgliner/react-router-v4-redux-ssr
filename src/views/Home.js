@@ -18,6 +18,10 @@ class Home extends React.Component {
         <div>
           <Link to="/static">Static Page Example</Link>
           <Link to="/plusDataDeps">Static Route + External Data Example</Link>
+          <br />
+          <Link to="/dynamic/1">Dynamic Page (Populated with 1)</Link>
+          <Link to="/dynamic/2">Dynamic Page (Populated with 2)</Link>
+          <Link to="/dynamic/3">Dynamic Page (Populated with 3)</Link>
         </div>
       </div>
     );

@@ -12,3 +12,15 @@ export function getApiData() {
       });
   };
 }
+
+export function getDynamicApiData(id) {
+  return (dispatch) => {
+    return api.fetchDynamicFromApi(id)
+      .then((res) => {
+        dispatch(syncActions.setDynamicApiData(res));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+}

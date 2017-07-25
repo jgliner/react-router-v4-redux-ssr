@@ -1,0 +1,28 @@
+.dynamic-view {
+  padding: 40px;
+  background-color: #E6C79C;
+}
+.dynamic-view-shape {
+  height: 50px;
+  width: 50px;
+  padding: 50px;
+  margin: 20px 60px;
+  margin-top: 0;
+}
+
+.dynamic-view-shape.shape-circle {
+  border-radius: 100%;
+  background-color: #561D25;
+}
+.dynamic-view-shape.shape-square {
+  background-color: #1A281F;
+}
+.dynamic-view-shape.shape-rectangle {
+  padding: 20px 50px;
+  background-color: #124E78;
+}
+
+.dynamic-view-shape p {
+  text-align: center;
+  color: #FFFFFF;
+}
