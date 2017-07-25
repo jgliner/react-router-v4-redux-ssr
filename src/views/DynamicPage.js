@@ -2,9 +2,9 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import './view-styles/Home.css';
+import './view-styles/DynamicPage.css';
 
-class Home extends React.Component {
+class DynamicPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -12,13 +12,11 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className="home-view">
-        <h1>Home</h1>
+      <div className="dynamic-view">
+        <h1>Dynamic Content</h1>
+        <p>Foo bar baz qux quux corge</p>
         <br />
-        <div>
-          <Link to="/static">Static Page Example</Link>
-          <Link to="/dynamic">Dynamic Page Example</Link>
-        </div>
+        <Link to="/">{'< Back Home'}</Link>
       </div>
     );
   }
@@ -28,4 +26,4 @@ const mapStateToProps = (state) => ({
   selectedItem: state.selectedItem,
 });
 
-export default withRouter(connect(mapStateToProps)(Home));
+export default withRouter(connect(mapStateToProps)(DynamicPage));

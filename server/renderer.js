@@ -50,13 +50,10 @@ const renderFullPage = (html, preloadedState, bundle, env) => {
 
 const loadRouteDependencies = (location) => {
   const currentRoute = matchRoutes(routes, location);
+  console.log(location, '----------->')
+  console.log(currentRoute)
 
   const need = currentRoute.map(({ route, match }) => {
-    console.log('\n-------------\n')
-    console.log(route)
-    console.log('\n-------------\n')
-    console.log(match)
-    console.log('\n-------------\n')
     if (route.component) {
       return route.component.loadData ?
         route.component.loadData(match) :

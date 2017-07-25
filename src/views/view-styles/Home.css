@@ -1,3 +1,9 @@
 .home-view {
+  background-color: #C8D5B9;
   padding: 40px;
+}
+.home-view a {
+  text-decoration: none;
+  display: block;
+  margin-bottom: 10px;
 }
