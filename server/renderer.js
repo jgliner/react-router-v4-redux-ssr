@@ -77,7 +77,7 @@ const loadRouteDependencies = (location, store) => {
   const need = currentRoute.map(({ route, match }) => {
     // once the route is matched, iterate through each component
     // looking for a `static loadData()` method
-    // (you'll find these in the `container` components)
+    // (you'll find these in the data-dependent `/src/views/` components)
     if (route.component) {
       return route.component.loadData ?
         route.component.loadData(store, match) :
@@ -118,8 +118,10 @@ const handleRender = (req, res) => {
       }
 
       // this is where server-side rendering actually happens!
-      // since static routing is the only way the server can handle
-      // `react-router`, this is where `react-router-config` comes to the rescue
+      // however, we have a problem:
+      // static routing is the only way the server can route,
+      // and we need to use <ConnectedRouter> (from rrr) instead of `<StaticRouter>` (from rr v4)...
+      // this is where `react-router-config` comes to the rescue (--> /routing/serverRoutes for more detail)
       const toRender = ReactDOMServer.renderToString((
         <Provider store={store}>
           <ConnectedRouter history={history}>

@@ -1,3 +1,9 @@
+/*
+  Home.js
+
+  Child route of <Base> located at `/`
+*/
+
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -11,6 +17,8 @@ class Home extends React.Component {
   }
 
   render() {
+    // Ok to use `<Link>` here now, since the parent component (`<Base>`)
+    // contains all router logic
     return (
       <div className="home-view">
         <h1>Home</h1>
@@ -19,17 +27,13 @@ class Home extends React.Component {
           <Link to="/static">Static Page Example</Link>
           <Link to="/plusDataDeps">Static Route + External Data Example</Link>
           <br />
-          <Link to="/dynamic/1">Dynamic Page (Populated with 1)</Link>
-          <Link to="/dynamic/2">Dynamic Page (Populated with 2)</Link>
-          <Link to="/dynamic/3">Dynamic Page (Populated with 3)</Link>
+          <Link to="/dynamic/1">Dynamic Page (Populated with <span>/1</span>)</Link>
+          <Link to="/dynamic/2">Dynamic Page (Populated with <span>/2</span>)</Link>
+          <Link to="/dynamic/3">Dynamic Page (Populated with <span>/3</span>)</Link>
         </div>
       </div>
     );
   }
 }
 
-const mapStateToProps = (state) => ({
-  selectedItem: state.selectedItem,
-});
-
-export default withRouter(connect(mapStateToProps)(Home));
+export default withRouter(connect()(Home));

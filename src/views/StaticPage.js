@@ -1,3 +1,14 @@
+/*
+  StaticPage.js
+
+  Child route of <Base> located at `/static`
+
+  An example of a route with:
+    - A static, pre-defined URL
+    - No data dependencies
+    - No children
+*/
+
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -22,8 +33,4 @@ class StaticPage extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
-  selectedItem: state.selectedItem,
-});
-
-export default withRouter(connect(mapStateToProps)(StaticPage));
+export default withRouter(connect()(StaticPage));

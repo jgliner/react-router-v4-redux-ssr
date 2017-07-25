@@ -1,3 +1,16 @@
+/*
+  DynamicPage.js
+
+  Child route of <Base> located at `/dynamic/:id`
+
+  An example of a route with:
+    - A dynamic URL that specifies params for `/dynamic`
+    - Data dependencies, fetched on the server before rendering
+    - No children
+
+  Will 404 if `/dynamic` is requested without an id
+*/
+
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,6 +21,10 @@ import './view-styles/DynamicPage.css';
 
 class DynamicPage extends React.Component {
   static loadData(store, match) {
+    // See /src/views/StaticPageWithDataDeps for details on `static loadData()`
+
+    // On the server, this is passed `react-router-config`'s matching URL
+    // From here, we can extract `:id` via `match.params`
     return store.dispatch(getDynamicApiData(match.params.id));
   }
 
@@ -31,7 +48,6 @@ class DynamicPage extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  selectedItem: state.selectedItem,
   dynamicApiData: state.dynamicApiData,
 });
 

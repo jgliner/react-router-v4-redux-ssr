@@ -1,9 +1,8 @@
-export function setSelectedItem(selectedItem) {
-  return {
-    type: 'SET_SELECTED_ITEM',
-    selectedItem,
-  };
-}
+/*
+  actions.js
+
+  Standard `redux` config, dispatches actions for updating the state tree
+*/
 
 export function setApiData(apiData) {
   return {

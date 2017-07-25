@@ -1,13 +1,13 @@
-// Global View
+/*
+  reducers.js
 
-function selectedItem(state = 1, action) {
-  switch (action.type) {
-    case 'SET_SELECTED_ITEM':
-      return action.selectedItem || state;
-    default:
-      return state;
-  }
-}
+  Standard `redux` config
+  This is the only place where the state can be altered.
+
+  The server prepares this on a request as it applies to the matching
+  route. From there, the state is configured and ready to go by the time
+  the bundle reaches the client
+*/
 
 function apiData(state = {}, action) {
   switch (action.type) {
@@ -28,7 +28,6 @@ function dynamicApiData(state = {}, action) {
 }
 
 const reducers = {
-  selectedItem,
   apiData,
   dynamicApiData,
 };

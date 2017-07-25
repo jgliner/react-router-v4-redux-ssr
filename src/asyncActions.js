@@ -1,3 +1,10 @@
+/*
+  asyncActions.js
+
+  Uses redux `thunk` to dispatch events asynchronously
+  Once a promise is resolved, the results are set synchronously in `/src/actions.js`
+*/
+
 import * as api from './mockApi.js';
 import * as syncActions from './actions.js';
 

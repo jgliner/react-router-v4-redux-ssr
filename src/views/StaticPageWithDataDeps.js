@@ -1,3 +1,14 @@
+/*
+  StaticPageWithDataDeps.js
+
+  Child route of <Base> located at `/plusDataDeps`
+
+  An example of a route with:
+    - A static, pre-defined URL
+    - Data dependencies, fetched on the server before rendering
+    - No children
+*/
+
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -8,6 +19,11 @@ import './view-styles/StaticPageWithDataDeps.css';
 
 class StaticPageWithDataDeps extends React.Component {
   static loadData(store) {
+    // this method is called in `loadRouteDependencies()` in /server/renderer.js
+    // and will block the server from rendering until the data is returned...
+    // it will throw a 500 if the data is not resolved or if there is a timeout
+
+    // the client DOES NOT see this method at all
     return store.dispatch(getApiData());
   }
 
@@ -34,7 +50,6 @@ class StaticPageWithDataDeps extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  selectedItem: state.selectedItem,
   apiData: state.apiData,
 });
 

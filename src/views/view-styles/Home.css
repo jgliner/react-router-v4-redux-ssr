@@ -7,3 +7,10 @@
   display: block;
   margin-bottom: 10px;
 }
+.home-view a span {
+  font-family: 'courier new', monospace;
+  color: #000000;
+  background-color: #DDDDDD;
+  font-size: 15px;
+  padding: 0 5px;
+}
