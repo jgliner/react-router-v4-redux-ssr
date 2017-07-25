@@ -32,6 +32,21 @@ class StaticPageWithDataDeps extends React.Component {
     this.state = {};
   }
 
+  componentDidMount() {
+    // CDM is only called on the CLIENT - if the situation calls for it, feel free
+    // to use `document` or `window` objects here
+
+    if (!Object.keys(this.props.apiData).length) {
+      console.info('Client must fetch and render');
+      // if the client needs to render this and the data does not exist,
+      // fetch the data, then render...
+      this.props.callApiFromClient();
+    }
+    else {
+      console.info('No new data needed!');
+    }
+  }
+
   render() {
     const data = this.props.apiData;
     return (
@@ -53,4 +68,13 @@ const mapStateToProps = (state) => ({
   apiData: state.apiData,
 });
 
-export default withRouter(connect(mapStateToProps)(StaticPageWithDataDeps));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    callApiFromClient() {
+      // dispatches async action (identical to the static loadData() function on the server)
+      dispatch(getApiData());
+    },
+  };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(StaticPageWithDataDeps));

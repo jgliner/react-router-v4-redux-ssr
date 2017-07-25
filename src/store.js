@@ -37,9 +37,10 @@ export default function configureStore(initialState = {}, fromServer) {
   // once we init the routerMiddleware with this `history`,
   // compose with devtools (dev) or just apply it (prod)
   const initializedRouterMW = routerMiddleware(history);
-  const middleware = process.env.NODE_ENV === 'development' ?
-    composeWithDevTools(applyMiddleware(initializedRouterMW, thunk)) :
-    applyMiddleware(initializedRouterMW, thunk);
+      // const middleware = process.env.NODE_ENV === 'development' ?
+      //   composeWithDevTools(applyMiddleware(initializedRouterMW, thunk)) :
+      //   applyMiddleware(initializedRouterMW, thunk);
+  const middleware = composeWithDevTools(applyMiddleware(initializedRouterMW, thunk));
 
   const store = createStore(combineReducers({
     ...reducers,

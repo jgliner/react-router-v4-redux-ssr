@@ -5,6 +5,9 @@
   having to account for confounding variables, `setTimeouts` are used
   to represent external API calls. Normally, you'd use something like
   `fetch`, `axios`, or `ajax` here.
+
+  This is also good for testing, since we can simulate how long API calls
+  will take to resolve
 */
 
 // @TODO: random failure rates

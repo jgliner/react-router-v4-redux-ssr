@@ -24,6 +24,9 @@ export function getDynamicApiData(id) {
   return (dispatch) => {
     return api.fetchDynamicFromApi(id)
       .then((res) => {
+        // inject route for state transitions - one of the many ways to check for updates
+        // that may require fetching
+        res.id = id;
         return dispatch(syncActions.setDynamicApiData(res));
       })
       .catch((err) => {

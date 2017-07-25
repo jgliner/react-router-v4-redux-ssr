@@ -33,6 +33,22 @@ class DynamicPage extends React.Component {
     this.state = {};
   }
 
+  componentDidMount() {
+    const clientRenders = (
+      !Object.keys(this.props.dynamicApiData).length ||
+      this.props.match.params.id !== this.props.dynamicApiData.id
+    );
+    if (clientRenders) {
+      console.info('Client must fetch and render');
+      // if the client needs to render this and the data does not exist,
+      // fetch the data, then render
+      this.props.callApiFromClient(this.props.match.params.id);
+    }
+    else {
+      console.info('No new data needed!');
+    }
+  }
+
   render() {
     const data = this.props.dynamicApiData;
     return (
@@ -51,4 +67,13 @@ const mapStateToProps = (state) => ({
   dynamicApiData: state.dynamicApiData,
 });
 
-export default withRouter(connect(mapStateToProps)(DynamicPage));
+const mapDispatchToProps = (dispatch) => {
+  return {
+    callApiFromClient(id) {
+      // dispatches async action (identical to the static loadData() function on the server)
+      dispatch(getDynamicApiData(id));
+    },
+  };
+};
+
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(DynamicPage));
