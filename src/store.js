@@ -39,7 +39,7 @@ export default function configureStore(initialState = {}, fromServer) {
   const initializedRouterMW = routerMiddleware(history);
   const middleware = process.env.NODE_ENV === 'development' ?
     composeWithDevTools(applyMiddleware(initializedRouterMW, thunk)) :
-    applyMiddleware(initializedRouterMW);
+    applyMiddleware(initializedRouterMW, thunk);
 
   const store = createStore(combineReducers({
     ...reducers,
