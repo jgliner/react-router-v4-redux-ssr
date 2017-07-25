@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 
 import { getApiData } from '../asyncActions.js';
 
-import './view-styles/DynamicPage.css';
+import './view-styles/StaticPageWithDataDeps.css';
 
-class DynamicPage extends React.Component {
+class StaticPageWithDataDeps extends React.Component {
   static loadData(store) {
     return store.dispatch(getApiData());
   }
@@ -19,8 +19,8 @@ class DynamicPage extends React.Component {
   render() {
     const data = this.props.apiData;
     return (
-      <div className="dynamic-view">
-        <h1>Dynamic Content</h1>
+      <div className="static-data-view">
+        <h1>Static Page + External Data</h1>
         {
           Object.keys(data).map((dataKey, i) => (
             <p key={i}>{dataKey} -- {data[dataKey]}</p>
@@ -38,4 +38,4 @@ const mapStateToProps = (state) => ({
   apiData: state.apiData,
 });
 
-export default withRouter(connect(mapStateToProps)(DynamicPage));
+export default withRouter(connect(mapStateToProps)(StaticPageWithDataDeps));

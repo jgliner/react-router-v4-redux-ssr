@@ -2,7 +2,7 @@ import Base from '../containers/Base.js';
 
 import Home from '../views/Home.js';
 import StaticPage from '../views/StaticPage.js';
-import DynamicPage from '../views/DynamicPage.js';
+import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps.js';
 
 const routes = [
   {
@@ -18,8 +18,8 @@ const routes = [
         component: StaticPage,
       },
       {
-        path: '/dynamic',
-        component: DynamicPage,
+        path: '/plusDataDeps',
+        component: StaticPageWithDataDeps,
       },
     ],
   },
