@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "Demo for SSR with rr@v4 and rrr@v4",
   "scripts": {
-    "dev": "NODE_ENV=development ENV_CONF=local PORT=3005 node ./server/app.js"
+    "build": "webpack -p --optimize-minimize --define NODE_ENV=production",
+    "dev": "rm -rf ./dist/* && NODE_ENV=development ENV_CONF=local PORT=3005 node ./server/app.js",
+    "prod": "NODE_ENV=production PORT=3005 node ./server/app.js",
+    "start": "rm -rf ./dist/* && npm run build && npm run prod"
   },
   "main": "index.js",
   "author": "Jarrett Gliner <jarrett.gliner@gmail.com>",
@@ -19,6 +22,7 @@
     "body-parser": "^1.17.2",
     "css-loader": "^0.28.4",
     "express": "^4.15.3",
+    "extract-text-webpack-plugin": "^3.0.0",
     "history": "^4.6.3",
     "morgan": "^1.8.2",
     "react": "^15.6.1",

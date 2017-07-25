@@ -41,4 +41,4 @@ example/public/bundle.js
 example/public/bundle.js.map
 yarn.lock
 
-example/data/private/*
+dist/*

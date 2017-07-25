@@ -1,16 +1,15 @@
 // Server rendering entry
 
 import React from 'react';
+import path from 'path';
 import ReactDOMServer from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
-import { matchRoutes } from 'react-router-config';
+import { matchRoutes, renderRoutes } from 'react-router-config';
 import serialize from 'serialize-javascript';
 
 import routes from '../src/routing/serverRoutes.js';
 import configureStore from '../src/store.js';
-
-import Base from '../src/containers/Base.js';
 
 const normalizeAssets = (assets) => {
   return assets.reduce((acc, chunk) => {
@@ -26,43 +25,38 @@ const normalizeAssets = (assets) => {
   }, []);
 };
 
-const renderFullPage = (html, preloadedState, assetsByChunkName) => {
+const renderFullPage = (html, preloadedState, bundle, env) => {
   return (`
     <!DOCTYPE html>
-    <html lang="en" class="wf-loading">
+    <html lang="en">
       <head>
         <meta charSet="utf-8">
-        <meta httpEquiv="X-UA-Compatible" content="IE=edge">
         <title>RR+RRR v4 Server-Side</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1">
         <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css' />
         <link rel="icon" type="image/png" href="https://reacttraining.com/react-router/favicon-32x32.png" sizes="32x32">
         <link rel="icon" type="image/png" href="https://reacttraining.com/react-router/favicon-16x16.png" sizes="16x16">
+        ${env === 'production' ? '<link rel="stylesheet" type="text/css" href="/dist/main.css">' : ''}
       </head>
       <body>
         <div id="root">
           <div>${html}</div>
         </div>
         <script data-cfasync="false">window.INITIAL_STATE = ${serialize(preloadedState)};</script>
-        ${
-          normalizeAssets([
-            assetsByChunkName.main,
-          ])
-          .filter((path) => {
-            return path.endsWith('.js');
-          })
-          .map(path => `<script src="${path}"></script>`)
-          .join('\n')
-        }
+        ${bundle}
       </body>
     </html>
   `);
 };
 
 const loadRouteDependencies = (location) => {
-  const currentRoute = matchRoutes(routes, location.pathname);
+  const currentRoute = matchRoutes(routes, location);
 
   const need = currentRoute.map(({ route, match }) => {
+    console.log('\n-------------\n')
+    console.log(route)
+    console.log('\n-------------\n')
+    console.log(match)
+    console.log('\n-------------\n')
     if (route.component) {
       return route.component.loadData ?
         route.component.loadData(match) :
@@ -75,22 +69,39 @@ const loadRouteDependencies = (location) => {
   return Promise.all(need);
 };
 
+const concatDevBundle = (assetsByChunkName) => {
+  return normalizeAssets([
+    assetsByChunkName.main,
+  ])
+    .filter(path => path.endsWith('.js'))
+    .map(path => `<script src="${path}"></script>`)
+    .join('\n');
+};
+
 const handleRender = (req, res) => {
-  loadRouteDependencies(req.url)
+  loadRouteDependencies(req.originalUrl)
     .then((data) => {
-      const assetsByChunkName = res.locals.webpackStats.toJson().assetsByChunkName;
+      let bundle;
+      if (process.env.NODE_ENV === 'development') {
+        bundle = concatDevBundle(res.locals.webpackStats.toJson().assetsByChunkName);
+      }
+      else {
+        bundle = '<script src="/dist/main.js"></script>';
+      }
 
       const { store, history } = configureStore({}, 'fromServer');
       const toRender = ReactDOMServer.renderToString((
         <Provider store={store}>
           <ConnectedRouter history={history}>
-            <Base />
+            <div>
+              {renderRoutes(routes)}
+            </div>
           </ConnectedRouter>
         </Provider>
       ));
-      
+
       const preloadedState = store.getState();
-      res.status(200).send(renderFullPage(toRender, preloadedState, assetsByChunkName));
+      res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));
     })
     .catch((err) => {
       console.error(err);

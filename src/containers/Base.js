@@ -8,8 +8,7 @@ import './container-styles/Base.css';
 
 class Base extends React.Component {
   static loadData() {
-    console.log('suh')
-    return 'suh'
+    console.log('load data -', Date())
   }
 
   constructor(props) {

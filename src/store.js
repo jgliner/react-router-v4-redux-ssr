@@ -9,14 +9,18 @@ import reducers from './reducers';
 
 export default function configureStore(initialState = {}, fromServer) {
   let history;
+
   if (fromServer) {
     history = createMemoryHistory();
   }
   else {
     history = createBrowserHistory();
   }
+
   const browserMiddleware = routerMiddleware(history);
-  const middleware = composeWithDevTools(applyMiddleware(browserMiddleware));
+  const middleware = process.env.NODE_ENV === 'development' ?
+    composeWithDevTools(applyMiddleware(browserMiddleware)) :
+    applyMiddleware(browserMiddleware);
 
   const store = createStore(combineReducers({
     ...reducers,
