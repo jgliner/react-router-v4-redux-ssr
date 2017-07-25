@@ -4,7 +4,7 @@ import React from 'react';
 import path from 'path';
 import ReactDOMServer from 'react-dom/server';
 import { Provider } from 'react-redux';
-import { ConnectedRouter } from 'react-router-redux';
+import { ConnectedRouter, push } from 'react-router-redux';
 import { matchRoutes, renderRoutes } from 'react-router-config';
 import serialize from 'serialize-javascript';
 
@@ -97,7 +97,9 @@ const handleRender = (req, res) => {
         </Provider>
       ));
 
+      store.dispatch(push(req.originalUrl));
       const preloadedState = store.getState();
+
       res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));
     })
     .catch((err) => {
