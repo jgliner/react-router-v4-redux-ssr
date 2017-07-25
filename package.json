@@ -1,7 +1,7 @@
 {
   "name": "rr-v4-ssr",
   "version": "0.0.1",
-  "description": "Demo for SSR with rr@v4 and rrr@v4",
+  "description": "Demo for SSR with rr@v4 and rrr@v5",
   "scripts": {
     "build": "webpack -p --optimize-minimize --define NODE_ENV=production",
     "dev": "rm -rf ./dist/* && NODE_ENV=development ENV_CONF=local PORT=3005 node ./server/app.js",

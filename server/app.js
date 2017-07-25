@@ -1,6 +1,11 @@
-require('babel-register')({
-  presets: ['env', 'es2015', 'react', 'stage-0'],
-});
+/*
+  app.js
+
+  Express server
+*/
+
+require('babel-register');
+// Prevents CSS from being bundled with webpack in dev
 require.extensions['.css'] = _ => _;
 
 const express = require('express');
@@ -17,6 +22,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === 'development') {
+  // Only necessary in dev...
+  // In prod, we don't need all this webpack stuff,
+  // since we're pre-compiling our bundle
   const webpack = require('webpack');
   const webpackMiddleware = require('webpack-dev-middleware');
   const hotMiddleware = require('webpack-hot-middleware');
@@ -34,8 +42,12 @@ if (process.env.NODE_ENV === 'development') {
   }));
 }
 else {
+  // Only necessary in prod...
+  // We do not want our components trying to `import` CSS
+  // this is what causes FOUC
   app.use('/dist', express.static('./dist'));
 }
+// --> /server/renderer.js
 app.use('*', rendering.handleRender);
 
 app.listen(PORT, () => {

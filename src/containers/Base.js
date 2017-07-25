@@ -8,6 +8,7 @@ import './container-styles/Base.css';
 
 class Base extends React.Component {
   static loadData() {
+    // @TODO: find something async to load here
     console.log('load data -', Date())
   }
 

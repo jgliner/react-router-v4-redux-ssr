@@ -10,6 +10,7 @@ let plugins = [];
 let cssLoaders = [];
 
 if (process.argv.includes('NODE_ENV=production')) {
+  // Production bundle includes ExtractText to prevent FOUC 
   console.log('Bundling for production...\n\n');
   plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -33,6 +34,7 @@ if (process.argv.includes('NODE_ENV=production')) {
   });
 }
 else {
+  // Dev bundle includes HMR
   console.log('Preparing dev server...\n\n');
   main.unshift('webpack-hot-middleware/client?path=http://localhost:3005/__webpack_hmr');
 
@@ -55,6 +57,7 @@ else {
   ];
 }
 
+// Standard webpack config... nothing too fancy
 module.exports = {
   devtool: 'cheap-eval-source-map',
   entry: {

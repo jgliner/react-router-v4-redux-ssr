@@ -1,4 +1,11 @@
-// Server rendering entry
+/*
+  renderer.js
+
+  Responsible for server-side rendering and fetching
+  appropriate assets for a given route
+
+  Starts at `Function handleRender()`, called by the server
+*/
 
 import React from 'react';
 import path from 'path';
@@ -11,21 +18,11 @@ import serialize from 'serialize-javascript';
 import routes from '../src/routing/serverRoutes.js';
 import configureStore from '../src/store.js';
 
-const normalizeAssets = (assets) => {
-  return assets.reduce((acc, chunk) => {
-    if (Array.isArray(chunk)) {
-      chunk.forEach((chunklet) => {
-        acc.push(chunklet);
-      });
-    }
-    else {
-      acc.push(chunk);
-    }
-    return acc;
-  }, []);
-};
-
 const renderFullPage = (html, preloadedState, bundle, env) => {
+  // the raw markup that the client will receive
+  // notice how there is no static .html file anywhere in this repository!
+
+  // also note how we are serializing the preloaded state to prevent XSS attacks
   return (`
     <!DOCTYPE html>
     <html lang="en">
@@ -41,17 +38,46 @@ const renderFullPage = (html, preloadedState, bundle, env) => {
         <div id="root">
           <div>${html}</div>
         </div>
-        <script data-cfasync="false">window.INITIAL_STATE = ${serialize(preloadedState)};</script>
+        <script>window.INITIAL_STATE = ${serialize(preloadedState)};</script>
         ${bundle}
       </body>
     </html>
   `);
 };
 
+const normalizeAssets = (assets) => {
+  return assets.reduce((acc, chunk) => {
+    if (Array.isArray(chunk)) {
+      chunk.forEach((chunklet) => {
+        // need to drill down one level, since
+        // HMR injects itself into the `main` chunk
+        acc.push(chunklet);
+      });
+    }
+    else {
+      acc.push(chunk);
+    }
+    return acc;
+  }, []);
+};
+
+const concatDevBundle = (assetsByChunkName) => {
+  return normalizeAssets([
+    assetsByChunkName.main,
+  ])
+    .filter(path => path.endsWith('.js'))
+    .map(path => `<script src="/${path}"></script>`)
+    .join('\n');
+};
+
 const loadRouteDependencies = (location, store) => {
+  // matchRoutes from 'react-router-config' handles this nicely
   const currentRoute = matchRoutes(routes, location);
 
   const need = currentRoute.map(({ route, match }) => {
+    // once the route is matched, iterate through each component
+    // looking for a `static loadData()` method
+    // (you'll find these in the `container` components)
     if (route.component) {
       return route.component.loadData ?
         route.component.loadData(store, match) :
@@ -64,30 +90,36 @@ const loadRouteDependencies = (location, store) => {
   return Promise.all(need);
 };
 
-const concatDevBundle = (assetsByChunkName) => {
-  return normalizeAssets([
-    assetsByChunkName.main,
-  ])
-    .filter(path => path.endsWith('.js'))
-    .map(path => `<script src="/${path}"></script>`)
-    .join('\n');
-};
-
 const handleRender = (req, res) => {
+  // start here
+
+  // --> /src/store.js
   const { store, history } = configureStore({}, 'fromServer');
 
-  store.dispatch(push(req.originalUrl));
+  // once `store` is configured, dispatch the proper route into
+  // the routerReducer
+  store.dispatch(push(req.originalUrl)); // Need to find more elegant way to do this?
 
+  // now that the route is in the redux state tree,
+  // routing itself is taken care of...
+  // however, in order to render the page, we need to check
+  // if there are any data dependencies, and if so, load them
   loadRouteDependencies(req.originalUrl, store)
     .then((data) => {
       let bundle;
       if (process.env.NODE_ENV === 'development') {
+        // in dev, it's necessary to dynamically load each asset
+        // so that HMR works properly
         bundle = concatDevBundle(res.locals.webpackStats.toJson().assetsByChunkName);
       }
       else {
+        // in prod, the bundle is pre-compiled, so it's ok to serve it statically
         bundle = '<script src="/dist/main.js"></script>';
       }
 
+      // this is where server-side rendering actually happens!
+      // since static routing is the only way the server can handle
+      // `react-router`, this is where `react-router-config` comes to the rescue
       const toRender = ReactDOMServer.renderToString((
         <Provider store={store}>
           <ConnectedRouter history={history}>
@@ -97,8 +129,11 @@ const handleRender = (req, res) => {
           </ConnectedRouter>
         </Provider>
       ));
+      // once everything is fully rendered, get a copy of the current redux state
+      // to send to the client so it can pick up where the server left off
       const preloadedState = store.getState();
 
+      // --> /index.js
       res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));
     })
     .catch((err) => {
