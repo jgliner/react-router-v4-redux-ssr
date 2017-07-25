@@ -48,15 +48,13 @@ const renderFullPage = (html, preloadedState, bundle, env) => {
   `);
 };
 
-const loadRouteDependencies = (location) => {
+const loadRouteDependencies = (location, store) => {
   const currentRoute = matchRoutes(routes, location);
-  console.log(location, '----------->')
-  console.log(currentRoute)
 
   const need = currentRoute.map(({ route, match }) => {
     if (route.component) {
       return route.component.loadData ?
-        route.component.loadData(match) :
+        route.component.loadData(store, match) :
         Promise.resolve(null);
     }
     // @TODO: return 404
@@ -76,7 +74,11 @@ const concatDevBundle = (assetsByChunkName) => {
 };
 
 const handleRender = (req, res) => {
-  loadRouteDependencies(req.originalUrl)
+  const { store, history } = configureStore({}, 'fromServer');
+
+  store.dispatch(push(req.originalUrl));
+
+  loadRouteDependencies(req.originalUrl, store)
     .then((data) => {
       let bundle;
       if (process.env.NODE_ENV === 'development') {
@@ -86,18 +88,15 @@ const handleRender = (req, res) => {
         bundle = '<script src="/dist/main.js"></script>';
       }
 
-      const { store, history } = configureStore({}, 'fromServer');
       const toRender = ReactDOMServer.renderToString((
         <Provider store={store}>
           <ConnectedRouter history={history}>
             <div>
-              {renderRoutes(routes)}
+              {renderRoutes(routes, { ...data })}
             </div>
           </ConnectedRouter>
         </Provider>
       ));
-
-      store.dispatch(push(req.originalUrl));
       const preloadedState = store.getState();
 
       res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));

@@ -9,8 +9,18 @@ function selectedItem(state = 1, action) {
   }
 }
 
+function apiData(state = {}, action) {
+  switch (action.type) {
+    case 'SET_API_DATA':
+      return action.apiData || state;
+    default:
+      return state;
+  }
+}
+
 const reducers = {
   selectedItem,
+  apiData,
 };
 
 export default reducers;

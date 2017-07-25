@@ -1,6 +1,7 @@
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import { routerMiddleware, routerReducer } from 'react-router-redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
+import thunk from 'redux-thunk';
 
 import createBrowserHistory from 'history/createBrowserHistory';
 import createMemoryHistory from 'history/createMemoryHistory';
@@ -19,7 +20,7 @@ export default function configureStore(initialState = {}, fromServer) {
 
   const browserMiddleware = routerMiddleware(history);
   const middleware = process.env.NODE_ENV === 'development' ?
-    composeWithDevTools(applyMiddleware(browserMiddleware)) :
+    composeWithDevTools(applyMiddleware(browserMiddleware, thunk)) :
     applyMiddleware(browserMiddleware);
 
   const store = createStore(combineReducers({

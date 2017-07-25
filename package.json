@@ -34,6 +34,7 @@
     "react-router-redux": "next",
     "redux": "^3.7.2",
     "redux-devtools-extension": "^2.13.2",
+    "redux-thunk": "^2.2.0",
     "serialize-javascript": "^1.4.0",
     "style-loader": "^0.18.2",
     "webpack": "^3.3.0"
