@@ -17,6 +17,8 @@ import { connect } from 'react-redux';
 
 import { getDynamicApiData } from '../asyncActions.js';
 
+import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+
 import './view-styles/DynamicPage.css';
 
 class DynamicPage extends React.Component {
@@ -30,16 +32,13 @@ class DynamicPage extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.checkForClientRender = this.checkForClientRender.bind(this);
   }
 
   componentDidMount() {
-    const clientRenders = (
-      !Object.keys(this.props.dynamicApiData).length ||
-      this.props.match.params.id !== this.props.dynamicApiData.id
-    );
+    const clientRenders = this.checkForClientRender();
     if (clientRenders) {
-      console.info('Client must fetch and render');
       // if the client needs to render this and the data does not exist,
       // fetch the data, then render
       this.props.callApiFromClient(this.props.match.params.id);
@@ -49,14 +48,27 @@ class DynamicPage extends React.Component {
     }
   }
 
+  checkForClientRender() {
+    return (
+      !Object.keys(this.props.dynamicApiData).length ||
+      this.props.match.params.id !== this.props.dynamicApiData.id
+    );
+  }
+
   render() {
     const data = this.props.dynamicApiData;
+
+    // the same criteria we used to check if the client side needed to fetch/render
+    // is also used to see if the data is still loading
+    const loading = this.checkForClientRender();
     return (
       <div className="dynamic-view">
         <h1>Dynamic Content - {this.props.match.params.id}</h1>
-        <div className={`dynamic-view-shape shape-${data.shape}`}>
-          <p>{data.word}</p>
-        </div>
+        <LoadingWrapper isLoading={loading}>
+          <div className={`dynamic-view-shape shape-${data.shape}`}>
+            <p>{data.word}</p>
+          </div>
+        </LoadingWrapper>
         <Link to="/">{'< Back Home'}</Link>
       </div>
     );

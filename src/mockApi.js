@@ -56,7 +56,7 @@ export const fetchDynamicFromApi = (id) => {
           break;
       }
       resolve(param);
-    }, 1000);
+    }, 2000);
   });
 };
 

@@ -20,10 +20,10 @@ function BaseRoutes({ location }) {
   // an "`<IndexRoute>`-like" component in previous versions of react-router
   return (
     <Switch>
-      <Route exact path="/" component={Home} />
-      <Route path="/static" component={StaticPage} />
-      <Route path="/plusDataDeps" component={StaticPageWithDataDeps} />
-      <Route path="/dynamic/:id" component={DynamicPage} />
+      <Route exact path="/" component={Home} location={location} />
+      <Route path="/static" component={StaticPage} location={location} />
+      <Route path="/plusDataDeps" component={StaticPageWithDataDeps} location={location} />
+      <Route path="/dynamic/:id" component={DynamicPage} location={location} />
     </Switch>
   );
 }

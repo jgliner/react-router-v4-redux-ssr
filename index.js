@@ -23,11 +23,6 @@ const initialState = window.INITIAL_STATE || {};
 // once this gets loaded in, garbage collect the old `window` state
 delete window.INITIAL_STATE;
 
-// this is for easy reference... does not get used anywhere below
-const { pathname, search, hash } = window.location;
-const location = `${pathname}${search}${hash}`;
-console.log('<-- IN client entrypoint -->', location);
-
 const render = () => {
   // look familiar?
   // this is exactly what the server did before sending the bundle.

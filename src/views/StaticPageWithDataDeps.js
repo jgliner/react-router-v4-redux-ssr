@@ -15,6 +15,8 @@ import { connect } from 'react-redux';
 
 import { getApiData } from '../asyncActions.js';
 
+import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+
 import './view-styles/StaticPageWithDataDeps.css';
 
 class StaticPageWithDataDeps extends React.Component {
@@ -29,14 +31,15 @@ class StaticPageWithDataDeps extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {};
+
+    this.checkForClientRender = this.checkForClientRender.bind(this);
   }
 
   componentDidMount() {
     // CDM is only called on the CLIENT - if the situation calls for it, feel free
     // to use `document` or `window` objects here
-
-    if (!Object.keys(this.props.apiData).length) {
+    const clientRenders = this.checkForClientRender();
+    if (clientRenders) {
       console.info('Client must fetch and render');
       // if the client needs to render this and the data does not exist,
       // fetch the data, then render...
@@ -47,16 +50,29 @@ class StaticPageWithDataDeps extends React.Component {
     }
   }
 
+  checkForClientRender() {
+    return !Object.keys(this.props.apiData).length;
+  }
+
   render() {
     const data = this.props.apiData;
+
+    // the same criteria we used to check if the client side needed to fetch/render
+    // is also used to see if the data is still loading - pass this status into
+    // <LoadingWrapper> (located in /src/component-utils/LoadingWrapper.js)
+    const loading = this.checkForClientRender();
     return (
       <div className="static-data-view">
         <h1>Static Page + External Data</h1>
-        {
-          Object.keys(data).map((dataKey, i) => (
-            <p key={i}>{dataKey} -- {data[dataKey]}</p>
-          ))
-        }
+        <LoadingWrapper isLoading={loading}>
+          <div>
+            {
+              Object.keys(data).map((dataKey, i) => (
+                <p key={i}>{dataKey} -- {data[dataKey]}</p>
+              ))
+            }
+          </div>
+        </LoadingWrapper>
         <br />
         <Link to="/">{'< Back Home'}</Link>
       </div>

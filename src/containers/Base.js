@@ -30,7 +30,7 @@ class Base extends React.Component {
     return (
       <div className="app-base">
         <h1>Base</h1>
-        <BaseRoutes />
+        <BaseRoutes location={this.props.location} />
       </div>
     );
   }
