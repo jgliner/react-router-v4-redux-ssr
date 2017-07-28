@@ -13,6 +13,7 @@ import { connect } from 'react-redux';
 import Home from '../views/Home.js';
 import StaticPage from '../views/StaticPage.js';
 import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps.js';
+import StaticDataDepsParams from '../views/StaticDataDepsParams.js';
 import DynamicPage from '../views/DynamicPage.js';
 
 function BaseRoutes({ location }) {
@@ -23,6 +24,11 @@ function BaseRoutes({ location }) {
       <Route exact path="/" component={Home} location={location} />
       <Route path="/static" component={StaticPage} location={location} />
       <Route path="/plusDataDeps" component={StaticPageWithDataDeps} location={location} />
+        { /*
+          For query params, need a wildcard after base route
+          @TODO: Sanitization?
+        */ }
+      <Route path="/dataDepsParams(.*)?" component={StaticDataDepsParams} location={location} />
       <Route path="/dynamic/:id" component={DynamicPage} location={location} />
     </Switch>
   );

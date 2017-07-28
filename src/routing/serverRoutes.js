@@ -10,6 +10,7 @@ import Base from '../containers/Base.js';
 import Home from '../views/Home.js';
 import StaticPage from '../views/StaticPage.js';
 import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps.js';
+import StaticDataDepsParams from '../views/StaticDataDepsParams.js';
 import DynamicPage from '../views/DynamicPage.js';
 
 // Fairly straightforward object nesting, should mirror `<BaseRoute>`
@@ -30,6 +31,12 @@ const routes = [
       {
         path: '/plusDataDeps',
         component: StaticPageWithDataDeps,
+      },
+      {
+        // For query params, need a wildcard after base route
+        // @TODO: Sanitization?
+        path: '/dataDepsParams(.*)?',
+        component: StaticDataDepsParams,
       },
       {
         path: '/dynamic/:id',

@@ -14,6 +14,7 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter, push } from 'react-router-redux';
 import { matchRoutes, renderRoutes } from 'react-router-config';
 import serialize from 'serialize-javascript';
+import qs from 'qs';
 
 import routes from '../src/routing/serverRoutes.js';
 import configureStore from '../src/store.js';
@@ -80,7 +81,15 @@ const loadRouteDependencies = (location, store) => {
     // (you'll find these in the data-dependent `/src/views/` components)
     if (route.component) {
       return route.component.loadData ?
-        route.component.loadData(store, match) :
+        // the following will be passed into each component's `loadData` method:
+        route.component.loadData(
+          store,
+          match,
+          location,
+            // query params are stored in the same place as dynamic child routes,
+            // but the key will be '0'
+          qs.parse(match.params['0'], { ignoreQueryPrefix: true })
+        ) :
         Promise.resolve(null);
     }
     // @TODO: return 404
