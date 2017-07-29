@@ -14,7 +14,7 @@ import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { getApiData } from '../asyncActions.js';
+import { getApiDataWithParams } from '../asyncActions.js';
 
 import LoadingWrapper from '../component-utils/LoadingWrapper.js';
 
@@ -23,9 +23,8 @@ import './view-styles/StaticDataDepsParams.css';
 class StaticDataDepsParams extends React.Component {
   static loadData(store, match, url, params) {
     // see /src/views/StaticPageWithDataDeps for more info on this
-  
-    console.log(params)
-    return store.dispatch(getApiData());
+
+    return store.dispatch(getApiDataWithParams(params));
   }
 
   constructor(props) {
@@ -50,11 +49,11 @@ class StaticDataDepsParams extends React.Component {
   }
 
   checkForClientRender() {
-    return !Object.keys(this.props.apiData).length;
+    return this.props.apiDataParams.length === 0;
   }
 
   render() {
-    const data = this.props.apiData;
+    const data = this.props.apiDataParams;
 
     // the same criteria we used to check if the client side needed to fetch/render
     // is also used to see if the data is still loading - pass this status into
@@ -66,8 +65,8 @@ class StaticDataDepsParams extends React.Component {
         <LoadingWrapper isLoading={loading}>
           <div>
             {
-              Object.keys(data).map((dataKey, i) => (
-                <p key={i}>{dataKey} -- {data[dataKey]}</p>
+              data.map((item, i) => (
+                <p key={i}>{item}</p>
               ))
             }
           </div>
@@ -80,14 +79,14 @@ class StaticDataDepsParams extends React.Component {
 }
 
 const mapStateToProps = (state) => ({
-  apiData: state.apiData,
+  apiDataParams: state.apiDataParams,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
     callApiFromClient() {
       // dispatches async action (identical to the static loadData() function on the server)
-      dispatch(getApiData());
+      dispatch(getApiDataWithParams());
     },
   };
 };

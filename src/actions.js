@@ -11,6 +11,13 @@ export function setApiData(apiData) {
   };
 }
 
+export function setApiDataParams(apiDataParams) {
+  return {
+    type: 'SET_API_DATA_WITH_PARAMS',
+    apiDataParams,
+  };
+}
+
 export function setDynamicApiData(dynamicApiData) {
   return {
     type: 'SET_DYNAMIC_API_DATA',

@@ -26,6 +26,32 @@ export const fetchFromApi = () => {
   });
 };
 
+export const fetchFromApiWithParams = (params) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      let dataFromApi = [
+        'foo',
+        'bar',
+        'baz',
+        'qux',
+        'quux',
+        'corge',
+        'uier',
+        'grault',
+        'garply',
+        'waldo',
+      ];
+      if (params.sort === 'asc') {
+        dataFromApi = dataFromApi.sort((a, b) => a > b ? 1 : -1);
+      }
+      else if (params.sort === 'desc') {
+        dataFromApi = dataFromApi.sort((a, b) => a <= b ? 1 : -1);
+      }
+      resolve(dataFromApi);
+    }, 1000);
+  });
+};
+
 export const fetchDynamicFromApi = (id) => {
   // This `id` comes from `<DynamicPage>`'s `static loadData()` method
   return new Promise((resolve) => {
@@ -59,4 +85,3 @@ export const fetchDynamicFromApi = (id) => {
     }, 2000);
   });
 };
-

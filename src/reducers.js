@@ -18,6 +18,15 @@ function apiData(state = {}, action) {
   }
 }
 
+function apiDataParams(state = [], action) {
+  switch (action.type) {
+    case 'SET_API_DATA_WITH_PARAMS':
+      return action.apiDataParams || state;
+    default:
+      return state;
+  }
+}
+
 function dynamicApiData(state = {}, action) {
   switch (action.type) {
     case 'SET_DYNAMIC_API_DATA':
@@ -29,6 +38,7 @@ function dynamicApiData(state = {}, action) {
 
 const reducers = {
   apiData,
+  apiDataParams,
   dynamicApiData,
 };
 

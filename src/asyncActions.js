@@ -20,6 +20,18 @@ export function getApiData() {
   };
 }
 
+export function getApiDataWithParams(params) {
+  return (dispatch) => {
+    return api.fetchFromApiWithParams(params)
+      .then((res) => {
+        return dispatch(syncActions.setApiDataParams(res));
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  };
+}
+
 export function getDynamicApiData(id) {
   return (dispatch) => {
     return api.fetchDynamicFromApi(id)
