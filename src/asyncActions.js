@@ -21,6 +21,7 @@ export function getApiData() {
 }
 
 export function getApiDataWithParams(params) {
+  console.log(params)
   return (dispatch) => {
     return api.fetchFromApiWithParams(params)
       .then((res) => {

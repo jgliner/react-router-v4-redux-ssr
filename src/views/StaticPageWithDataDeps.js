@@ -40,13 +40,13 @@ class StaticPageWithDataDeps extends React.Component {
     // to use `document` or `window` objects here
     const clientRenders = this.checkForClientRender();
     if (clientRenders) {
-      console.info('Client must fetch and render');
+      console.log('Client must fetch and render');
       // if the client needs to render this and the data does not exist,
       // fetch the data, then render...
       this.props.callApiFromClient();
     }
     else {
-      console.info('No new data needed!');
+      console.log('No new data needed!');
     }
   }
 

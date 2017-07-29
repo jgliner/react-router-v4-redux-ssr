@@ -13,6 +13,7 @@
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
+import qs from 'qs';
 
 import { getApiDataWithParams } from '../asyncActions.js';
 
@@ -34,34 +35,34 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidMount() {
-    // CDM is only called on the CLIENT - if the situation calls for it, feel free
-    // to use `document` or `window` objects here
     const clientRenders = this.checkForClientRender();
+
     if (clientRenders) {
-      console.info('Client must fetch and render');
-      // if the client needs to render this and the data does not exist,
-      // fetch the data, then render...
-      this.props.callApiFromClient();
+      console.log('Client must fetch and render');
+
+      // this.props.match only refers to the URL matched during server-rendering
+      // therefore, on the client, use this.props.location when using router props
+      const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+      this.props.callApiFromClient(parsedParams);
     }
     else {
-      console.info('No new data needed!');
+      console.log('No new data needed!');
     }
   }
 
   checkForClientRender() {
+    // just like in /src/views/StaticPageWithDataDeps, but we initialized with an Array
+    // in /src/reducers, so object keys aren't necessary
     return this.props.apiDataParams.length === 0;
   }
 
   render() {
     const data = this.props.apiDataParams;
 
-    // the same criteria we used to check if the client side needed to fetch/render
-    // is also used to see if the data is still loading - pass this status into
-    // <LoadingWrapper> (located in /src/component-utils/LoadingWrapper.js)
     const loading = this.checkForClientRender();
     return (
       <div className="static-data-view">
-        <h1>Static Page + External Data</h1>
+        <h1>Static Page + External Data + Query Params</h1>
         <LoadingWrapper isLoading={loading}>
           <div>
             {
@@ -84,9 +85,9 @@ const mapStateToProps = (state) => ({
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    callApiFromClient() {
+    callApiFromClient(params) {
       // dispatches async action (identical to the static loadData() function on the server)
-      dispatch(getApiDataWithParams());
+      dispatch(getApiDataWithParams(params));
     },
   };
 };

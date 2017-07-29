@@ -44,7 +44,7 @@ class DynamicPage extends React.Component {
       this.props.callApiFromClient(this.props.match.params.id);
     }
     else {
-      console.info('No new data needed!');
+      console.log('No new data needed!');
     }
   }
 
