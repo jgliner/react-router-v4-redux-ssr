@@ -35,6 +35,8 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidMount() {
+    // rr@v4 doesn't include a parsing library unfortunately
+    // use qs or DIY
     const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const clientRenders = this.checkForClientRender(parsedParams);
     if (clientRenders) {
@@ -49,12 +51,13 @@ class StaticDataDepsParams extends React.Component {
     }
   }
 
-  componentDidUpdate(nextProps) {
-    const currentParams = qs.parse(nextProps.location.search, { ignoreQueryPrefix: true });
-    if (nextProps.location.search !== this.props.location.search) {
-      this.props.callApiFromClient(currentParams);
+  componentDidUpdate(prevProps) {
+    const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    if (this.props.location.search !== prevProps.location.search) {
+      this.props.callApiFromClient(parsedParams);
       return true;
     }
+    return +this.props.currentPage !== +parsedParams.page;
   }
 
   checkForClientRender(parsedParams) {
@@ -62,22 +65,20 @@ class StaticDataDepsParams extends React.Component {
       // if data already exists, but it doesn't match the route, need to fetch and re-render
       return +this.props.currentPage !== +parsedParams.page;
     }
-    // just like in /src/views/StaticPageWithDataDeps, but we initialized with an Array
-    // in /src/reducers, so object keys aren't necessary
     return Object.keys(this.props.apiDataWithParams).length === 0;
   }
 
   render() {
-    const currentParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const data = this.props.apiDataWithParams.data || [];
     const totalPages = +this.props.apiDataWithParams.totalPages;
-    const page = +currentParams.page;
+    const page = +parsedParams.page;
 
-    const loading = this.checkForClientRender(currentParams);
+    const loading = this.checkForClientRender(parsedParams);
     return (
       <div className="static-data-param-view">
         <h1>Static Page + External Data + Query Params</h1>
-        <h3>{Object.keys(currentParams)} {page}</h3>
+        <h3>{Object.keys(parsedParams)} {page}</h3>
         <br />
         <br />
         <LoadingWrapper isLoading={loading}>
@@ -116,7 +117,6 @@ class StaticDataDepsParams extends React.Component {
 const mapStateToProps = state => ({
   apiDataWithParams: state.apiDataWithParams,
   currentPage: state.currentPage,
-  location: state.router.location,
 });
 
 const mapDispatchToProps = (dispatch) => {

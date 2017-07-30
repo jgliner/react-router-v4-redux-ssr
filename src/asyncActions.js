@@ -26,8 +26,11 @@ export function getApiDataWithParams(params) {
       .then((res) => {
         // use a separate synchronous state - one of the many ways to check for updates
         // that may require fetching
-        syncActions.setApiDataCurrentPage(params.page || 1);
-        return dispatch(syncActions.setapiDataWithParams(res));
+
+        // set data
+        dispatch(syncActions.setapiDataWithParams(res));
+        // update page
+        dispatch(syncActions.setApiDataCurrentPage(+params.page || 1));
       })
       .catch((err) => {
         console.error(err);
