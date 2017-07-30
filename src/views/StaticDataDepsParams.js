@@ -62,12 +62,15 @@ class StaticDataDepsParams extends React.Component {
   render() {
     const data = this.props.apiDataWithParams;
     const currentParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const page = +currentParams.page;
+
     const loading = this.checkForClientRender();
-    console.log('All props for this view', this.props, loading)
     return (
       <div className="static-data-param-view">
         <h1>Static Page + External Data + Query Params</h1>
-        <h3>{Object.keys(currentParams)} {currentParams.page}</h3>
+        <h3>{Object.keys(currentParams)} {page}</h3>
+        <br />
+        <br />
         <LoadingWrapper isLoading={loading}>
           <div>
             {
@@ -77,6 +80,23 @@ class StaticDataDepsParams extends React.Component {
             }
           </div>
         </LoadingWrapper>
+        <br />
+        <div className="static-data-param-page-nav">
+          <Link
+            className={`page-prev ${page === 1 ? 'hidden' : ''}`}
+            to={`/dataDepsParams?page=${page - 1}`}
+          >
+            {'<<'}
+          </Link>
+          <span> {page} </span>
+          <Link
+            className={`page-prev ${page === data.totalPages ? 'hidden' : ''}`}
+            to={`/dataDepsParams?page=${page + 1}`}
+          >
+            {'>>'}
+          </Link>
+        </div>
+        <br />
         <br />
         <Link to="/">{'< Back Home'}</Link>
       </div>
