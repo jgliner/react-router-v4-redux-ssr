@@ -13,16 +13,16 @@ export function setApiData(apiData) {
 }
 
 // StaticDataDepsParams view
-export function setApiDataParams(apiDataParams) {
+export function setapiDataWithParams(apiDataWithParams) {
   return {
     type: 'SET_API_DATA_WITH_PARAMS',
-    apiDataParams,
+    apiDataWithParams,
   };
 }
-export function setApiDataSortOrder(sortOrder) {
+export function setApiDataCurrentPage(currentPage) {
   return {
-    type: 'SET_API_DATA_SORT_ORDER',
-    sortOrder,
+    type: 'SET_API_DATA_CURRENT_PAGE',
+    currentPage,
   };
 }
 

@@ -50,24 +50,24 @@ class StaticDataDepsParams extends React.Component {
   }
 
   checkForClientRender(parsedParams) {
-    if (this.props.apiDataParams.length && parsedParams) {
+    if (this.props.apiDataWithParams.length && parsedParams) {
       // if data already exists, but it doesn't match the route, need to fetch and re-render
-      return this.props.sortOrder !== parsedParams.sort;
+      return +this.props.currentPage !== +parsedParams.page;
     }
     // just like in /src/views/StaticPageWithDataDeps, but we initialized with an Array
     // in /src/reducers, so object keys aren't necessary
-    return this.props.apiDataParams.length === 0;
+    return this.props.apiDataWithParams.length === 0;
   }
 
   render() {
-    const data = this.props.apiDataParams;
+    const data = this.props.apiDataWithParams;
     const currentParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const loading = this.checkForClientRender();
     console.log('All props for this view', this.props, loading)
     return (
       <div className="static-data-param-view">
         <h1>Static Page + External Data + Query Params</h1>
-        <h3>{Object.keys(currentParams)} {currentParams.sort || '(no params)'}</h3>
+        <h3>{Object.keys(currentParams)} {currentParams.page}</h3>
         <LoadingWrapper isLoading={loading}>
           <div>
             {
@@ -85,8 +85,8 @@ class StaticDataDepsParams extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  apiDataParams: state.apiDataParams,
-  sortOrder: state.sortOrder,
+  apiDataWithParams: state.apiDataWithParams,
+  currentPage: state.currentPage,
   location: state.router.location,
 });
 

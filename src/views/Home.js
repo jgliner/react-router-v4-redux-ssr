@@ -31,9 +31,9 @@ class Home extends React.Component {
           <br />
           <b>Static + Query Params</b>
           <ul>
-            <li><Link to="/dataDepsParams">Static Route + External Data + No Query Params Example</Link></li>
-            <li><Link to="/dataDepsParams?sort=asc">Static Route + External Data + Query Params ASC Example</Link></li>
-            <li><Link to="/dataDepsParams?sort=desc">Static Route + External Data + Query Params DESC Example</Link></li>
+            <li><Link to="/dataDepsParams?page=1">Static Route + External Data + Query Params PAGE 1 Example</Link></li>
+            <li><Link to="/dataDepsParams?page=2">Static Route + External Data + Query Params PAGE 2 Example</Link></li>
+            <li><Link to="/dataDepsParams?page=3">Static Route + External Data + Query Params PAGE 3 Example</Link></li>
           </ul>
           <br />
           <b>Dynamic</b>

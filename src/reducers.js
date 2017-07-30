@@ -20,18 +20,18 @@ function apiData(state = {}, action) {
 }
 
 // StaticDataDepsParams view
-function apiDataParams(state = [], action) {
+function apiDataWithParams(state = [], action) {
   switch (action.type) {
     case 'SET_API_DATA_WITH_PARAMS':
-      return action.apiDataParams || state;
+      return action.apiDataWithParams || state;
     default:
       return state;
   }
 }
-function sortOrder(state = '', action) {
+function currentPage(state = 1, action) {
   switch (action.type) {
-    case 'SET_API_DATA_SORT_ORDER':
-      return action.sortOrder || state;
+    case 'SET_API_DATA_CURRENT_PAGE':
+      return action.currentPage || state;
     default:
       return state;
   }
@@ -49,8 +49,8 @@ function dynamicApiData(state = {}, action) {
 
 const reducers = {
   apiData,
-  apiDataParams,
-  sortOrder,
+  apiDataWithParams,
+  currentPage,
   dynamicApiData,
 };
 
