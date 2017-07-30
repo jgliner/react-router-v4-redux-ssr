@@ -9,6 +9,7 @@
   the bundle reaches the client
 */
 
+// StaticPageWithDataDeps view
 function apiData(state = {}, action) {
   switch (action.type) {
     case 'SET_API_DATA':
@@ -18,6 +19,7 @@ function apiData(state = {}, action) {
   }
 }
 
+// StaticDataDepsParams view
 function apiDataParams(state = [], action) {
   switch (action.type) {
     case 'SET_API_DATA_WITH_PARAMS':
@@ -26,7 +28,16 @@ function apiDataParams(state = [], action) {
       return state;
   }
 }
+function sortOrder(state = '', action) {
+  switch (action.type) {
+    case 'SET_API_DATA_SORT_ORDER':
+      return action.sortOrder || state;
+    default:
+      return state;
+  }
+}
 
+// DynamicPage view
 function dynamicApiData(state = {}, action) {
   switch (action.type) {
     case 'SET_DYNAMIC_API_DATA':
@@ -39,6 +50,7 @@ function dynamicApiData(state = {}, action) {
 const reducers = {
   apiData,
   apiDataParams,
+  sortOrder,
   dynamicApiData,
 };
 

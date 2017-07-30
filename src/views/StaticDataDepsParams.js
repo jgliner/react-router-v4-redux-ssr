@@ -35,14 +35,13 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidMount() {
-    const clientRenders = this.checkForClientRender();
-
+    const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const clientRenders = this.checkForClientRender(parsedParams);
     if (clientRenders) {
       console.log('Client must fetch and render');
 
-      // this.props.match only refers to the URL matched during server-rendering
+      // this.props.match only refers to the URL matched during server rendering
       // therefore, on the client, use this.props.location when using router props
-      const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
       this.props.callApiFromClient(parsedParams);
     }
     else {
@@ -50,7 +49,11 @@ class StaticDataDepsParams extends React.Component {
     }
   }
 
-  checkForClientRender() {
+  checkForClientRender(parsedParams) {
+    if (this.props.apiDataParams.length && parsedParams) {
+      // if data already exists, but it doesn't match the route, need to fetch and re-render
+      return this.props.sortOrder !== parsedParams.sort;
+    }
     // just like in /src/views/StaticPageWithDataDeps, but we initialized with an Array
     // in /src/reducers, so object keys aren't necessary
     return this.props.apiDataParams.length === 0;
@@ -58,11 +61,13 @@ class StaticDataDepsParams extends React.Component {
 
   render() {
     const data = this.props.apiDataParams;
-
+    const currentParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const loading = this.checkForClientRender();
+    console.log('All props for this view', this.props, loading)
     return (
-      <div className="static-data-view">
+      <div className="static-data-param-view">
         <h1>Static Page + External Data + Query Params</h1>
+        <h3>{Object.keys(currentParams)} {currentParams.sort || '(no params)'}</h3>
         <LoadingWrapper isLoading={loading}>
           <div>
             {
@@ -79,8 +84,10 @@ class StaticDataDepsParams extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = state => ({
   apiDataParams: state.apiDataParams,
+  sortOrder: state.sortOrder,
+  location: state.router.location,
 });
 
 const mapDispatchToProps = (dispatch) => {

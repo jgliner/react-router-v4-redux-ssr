@@ -35,7 +35,6 @@ class Home extends React.Component {
             <li><Link to="/dataDepsParams?sort=asc">Static Route + External Data + Query Params ASC Example</Link></li>
             <li><Link to="/dataDepsParams?sort=desc">Static Route + External Data + Query Params DESC Example</Link></li>
           </ul>
-          <Link to="/plusDataDepsParams"></Link>
           <br />
           <b>Dynamic</b>
           <br />

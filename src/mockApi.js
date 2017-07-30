@@ -41,6 +41,7 @@ export const fetchFromApiWithParams = (params) => {
         'garply',
         'waldo',
       ];
+      // Ideally, these would be pre-sorted via a db or memcache
       if (params.sort === 'asc') {
         dataFromApi = dataFromApi.sort((a, b) => a > b ? 1 : -1);
       }

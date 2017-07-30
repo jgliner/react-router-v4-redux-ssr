@@ -1,8 +1,15 @@
 .static-data-param-view {
   padding: 40px;
-  background: #8FC0A9;
+  background: #E2856E;
+}
+.static-data-param-view h3 {
+  font-family: 'courier new', monospace;
+  display: inline;
+  color: #000000;
+  font-weight: initial;
+  background-color: #DDDDDD;
+  padding: 0 20px;
 }
 .static-data-param-view p {
   padding: 0 40px;
-  background: #8FC0A9;
 }
