@@ -46,8 +46,11 @@ export const fetchFromApiWithParams = (params) => {
           'waldo',
         ],
       ];
-      // Ideally, these would be pre-allocated via a db or memcache
-      resolve(dataFromApi[params.page - 1]);
+      // Ideally, these would be pre-allocated/counted via a db or memcache
+      resolve({
+        data: dataFromApi[params.page - 1],
+        totalPages: 3,
+      });
     }, 1000);
   });
 };

@@ -20,7 +20,7 @@ function apiData(state = {}, action) {
 }
 
 // StaticDataDepsParams view
-function apiDataWithParams(state = [], action) {
+function apiDataWithParams(state = {}, action) {
   switch (action.type) {
     case 'SET_API_DATA_WITH_PARAMS':
       return action.apiDataWithParams || state;

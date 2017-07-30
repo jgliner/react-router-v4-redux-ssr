@@ -49,22 +49,31 @@ class StaticDataDepsParams extends React.Component {
     }
   }
 
+  componentDidUpdate(nextProps) {
+    const currentParams = qs.parse(nextProps.location.search, { ignoreQueryPrefix: true });
+    if (nextProps.location.search !== this.props.location.search) {
+      this.props.callApiFromClient(currentParams);
+      return true;
+    }
+  }
+
   checkForClientRender(parsedParams) {
-    if (this.props.apiDataWithParams.length && parsedParams) {
+    if (Object.keys(this.props.apiDataWithParams).length && parsedParams) {
       // if data already exists, but it doesn't match the route, need to fetch and re-render
       return +this.props.currentPage !== +parsedParams.page;
     }
     // just like in /src/views/StaticPageWithDataDeps, but we initialized with an Array
     // in /src/reducers, so object keys aren't necessary
-    return this.props.apiDataWithParams.length === 0;
+    return Object.keys(this.props.apiDataWithParams).length === 0;
   }
 
   render() {
-    const data = this.props.apiDataWithParams;
     const currentParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
+    const data = this.props.apiDataWithParams.data || [];
+    const totalPages = +this.props.apiDataWithParams.totalPages;
     const page = +currentParams.page;
 
-    const loading = this.checkForClientRender();
+    const loading = this.checkForClientRender(currentParams);
     return (
       <div className="static-data-param-view">
         <h1>Static Page + External Data + Query Params</h1>
@@ -90,7 +99,7 @@ class StaticDataDepsParams extends React.Component {
           </Link>
           <span> {page} </span>
           <Link
-            className={`page-prev ${page === data.totalPages ? 'hidden' : ''}`}
+            className={`page-prev ${page === totalPages ? 'hidden' : ''}`}
             to={`/dataDepsParams?page=${page + 1}`}
           >
             {'>>'}
