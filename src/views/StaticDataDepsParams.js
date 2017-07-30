@@ -52,11 +52,16 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
+    // since the route and the component iteslf stay the same,
+    // it's necessary to manually check if another API call needs to be made
     const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
-    if (this.props.location.search !== prevProps.location.search) {
+    if (prevProps.location.search !== this.props.location.search) {
+      // if the prev query string and current query string don't match, get more data and rehydrate state
       this.props.callApiFromClient(parsedParams);
-      return true;
     }
+    // after the API call is made,
+    // the promise resolution includes a dispatch to set the page number of the data it just received
+    // this is what triggers the `<LoadingWrapper>` to stop rendering "LOADING" once the redux state has been rehydrated
     return +this.props.currentPage !== +parsedParams.page;
   }
 
