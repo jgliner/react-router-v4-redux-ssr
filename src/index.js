@@ -13,9 +13,9 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'react-router-redux';
 
-import Base from './src/containers/Base.js';
+import Base from './containers/Base.js';
 
-import configureStore from './src/store.js';
+import configureStore from './store.js';
 
 // the initial state configured on the server is sent through
 // the `window` object before the bundle to make sure it doesn't get blocked
@@ -48,7 +48,7 @@ const render = () => {
 render();
 
 if (module.hot) {
-  module.hot.accept('./src/containers/Base.js', () => {
+  module.hot.accept('./containers/Base.js', () => {
     console.log('HMR Accepted... Recompiling...');
   });
 }

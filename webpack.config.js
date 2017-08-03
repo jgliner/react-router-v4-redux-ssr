@@ -5,7 +5,7 @@ const path = require('path');
 
 console.log('\ncurrent pathname is:\n', path.resolve(__dirname, 'dist'), '\n');
 
-const main = ['./index.js'];
+const main = ['./src/index.js'];
 let plugins = [];
 let cssLoaders = [];
 
@@ -36,7 +36,7 @@ if (process.argv.includes('NODE_ENV=production')) {
 else {
   // Dev bundle includes HMR
   console.log('Preparing dev server...\n\n');
-  main.unshift('webpack-hot-middleware/client?path=http://localhost:3005/__webpack_hmr');
+  main.unshift('webpack-hot-middleware/client');
 
   plugins = [
     new webpack.HotModuleReplacementPlugin(),
@@ -96,6 +96,7 @@ module.exports = {
   plugins,
   output: {
     path: path.resolve(__dirname, 'dist'),
+    publicPath: '/',
     filename: '[name].js',
   },
 };

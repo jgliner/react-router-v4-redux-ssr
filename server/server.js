@@ -5,7 +5,7 @@
 */
 
 require('babel-register');
-// Prevents CSS from being bundled with webpack in dev
+// Prevents CSS from being bundled with webpack in prod
 require.extensions['.css'] = _ => _;
 
 const express = require('express');
@@ -33,18 +33,19 @@ if (process.env.NODE_ENV === 'development') {
 
   app.use(hotMiddleware(compiler, {
     log: console.log,
-    path: '/__webpack_hmr',
     heartbeat: 10 * 1000,
   }));
   app.use(webpackMiddleware(compiler, {
-    publicPath: '/',
+    publicPath: config.output.publicPath,
     serverSideRender: true,
   }));
 }
 else {
   // Only necessary in prod...
-  // We do not want our components trying to `import` CSS
-  // this is what causes FOUC
+  // This uses /dist as a dir for static files, since
+  // we want prod to serve the concatted/minified bundle instead of
+  // each component importing its own CSS...
+  // If you do not set this up correctly, you'll get FOUC in prod. Not good.
   app.use('/dist', express.static('./dist'));
 }
 // --> /server/renderer.js
