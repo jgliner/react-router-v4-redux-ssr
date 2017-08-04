@@ -6,7 +6,6 @@
 
   Starts at `Function handleRender()`, called by the server
 */
-
 import React from 'react';
 import path from 'path';
 import ReactDOMServer from 'react-dom/server';

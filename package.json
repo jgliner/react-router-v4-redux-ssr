@@ -4,7 +4,7 @@
   "description": "Demo for SSR with rr@v4 and rrr@v5",
   "scripts": {
     "build": "webpack -p --optimize-minimize --define NODE_ENV=production",
-    "dev": "rm -rf ./dist/* && NODE_ENV=development ENV_CONF=local PORT=3005 node ./server/server.js",
+    "dev": "rm -rf ./dist/* && NODE_ENV=development ENV_CONF=local PORT=3005 babel-node ./server/server.js",
     "prod": "NODE_ENV=production PORT=3005 node ./server/server.js",
     "start": "rm -rf ./dist/* && npm run build && npm run prod"
   },
@@ -41,6 +41,12 @@
     "webpack": "^3.3.0"
   },
   "devDependencies": {
+    "babel-plugin-react-transform": "^2.0.2",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-react-hmre": "^1.1.1",
+    "babel-runtime": "^6.25.0",
+    "chokidar": "^1.7.0",
+    "react-transform-hmr": "^1.0.4",
     "webpack-dev-middleware": "^1.11.0",
     "webpack-hot-middleware": "^2.18.2"
   }

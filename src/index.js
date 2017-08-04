@@ -46,9 +46,3 @@ const render = () => {
 };
 
 render();
-
-if (module.hot) {
-  module.hot.accept('./containers/Base.js', () => {
-    console.log('HMR Accepted... Recompiling...');
-  });
-}
