@@ -1,6 +1,6 @@
 {
   "name": "rr-v4-ssr",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Demo for SSR with rr@v4 and rrr@v5",
   "scripts": {
     "build": "webpack -p --optimize-minimize --define NODE_ENV=production",
