@@ -1,10 +1,3 @@
-/*
-  Base.js
-
-  The "root" component that persists throughout the app,
-  contains client router logic
-*/
-
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -14,11 +7,10 @@ import BaseRoutes from '../routing/BaseRoutes.js';
 import './container-styles/Base.css';
 
 class Base extends React.Component {
-  // No data to fetch, no static method needed
+
   constructor(props) {
     super(props);
 
-    // good for debugging - avoid excessive rendering
     this.renderCount = 0;
   }
 
@@ -26,7 +18,6 @@ class Base extends React.Component {
     this.renderCount++;
     console.log('RENDERS:', this.renderCount)
 
-    // --> /src/routing/BaseRoutes.js
     return (
       <div className="app-base">
         <h1>Base</h1>

@@ -1,11 +1,4 @@
-/*
-  app.js
-
-  Express server
-*/
-
 require('babel-register');
-// Prevents CSS from being bundled with webpack in prod
 require.extensions['.css'] = _ => _;
 
 const express = require('express');
@@ -24,9 +17,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 if (process.env.NODE_ENV === 'development') {
-  // Only necessary in dev...
-  // In prod, we don't need all this webpack stuff,
-  // since we're pre-compiling our bundle
   const chokidar = require('chokidar');
   const webpack = require('webpack');
   const webpackMiddleware = require('webpack-dev-middleware');
@@ -42,10 +32,6 @@ if (process.env.NODE_ENV === 'development') {
     publicPath: config.output.publicPath,
     serverSideRender: true,
   }));
-
-  // Do 'hot-reloading' of express stuff on the server
-  // Throw away cached modules and re-require next time
-  // Ensure there's no important state in there!
   const watcher = chokidar.watch('./');
 
   watcher.on('ready', () => {
@@ -56,9 +42,6 @@ if (process.env.NODE_ENV === 'development') {
       });
     });
   });
-
-  // Do 'hot-reloading' of react stuff on the server
-  // Throw away the cached client modules and let them be re-required next time
   compiler.plugin('done', () => {
     console.log('Clearing /src/ module cache from server');
     Object.keys(require.cache).forEach((id) => {
@@ -67,14 +50,8 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 else {
-  // Only necessary in prod...
-  // This uses /dist as a dir for static files, since
-  // we want prod to serve the concatted/minified bundle instead of
-  // each component importing its own CSS...
-  // If you do not set this up correctly, you'll get FOUC in prod. Not good.
   app.use('/dist', express.static('./dist'));
 }
-// --> /server/renderer.js
 app.use('*', rendering.handleRender);
 
 server = http.createServer(app);

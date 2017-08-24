@@ -1,15 +1,3 @@
-/*
-  StaticDataDepsParams.js
-
-  Child route of <Base> located at `/dataDepsParams`
-
-  An example of a route with:
-    - A static, pre-defined URL
-    - Data dependencies, fetched on the server before rendering
-    - No children
-    - Query params
-*/
-
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -23,8 +11,6 @@ import './view-styles/StaticDataDepsParams.css';
 
 class StaticDataDepsParams extends React.Component {
   static loadData(store, match, url, params) {
-    // see /src/views/StaticPageWithDataDeps for more info on this
-
     return store.dispatch(getApiDataWithParams(params));
   }
 
@@ -35,15 +21,10 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidMount() {
-    // rr@v4 doesn't include a parsing library unfortunately
-    // use qs or DIY
     const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     const clientRenders = this.checkForClientRender(parsedParams);
     if (clientRenders) {
       console.log('Client must fetch and render');
-
-      // this.props.match only refers to the URL matched during server rendering
-      // therefore, on the client, use this.props.location when using router props
       this.props.callApiFromClient(parsedParams);
     }
     else {
@@ -52,22 +33,17 @@ class StaticDataDepsParams extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    // since the route and the component iteslf stay the same,
-    // it's necessary to manually check if another API call needs to be made
     const parsedParams = qs.parse(this.props.location.search, { ignoreQueryPrefix: true });
     if (prevProps.location.search !== this.props.location.search) {
-      // if the prev query string and current query string don't match, get more data and rehydrate state
+
       this.props.callApiFromClient(parsedParams);
     }
-    // after the API call is made,
-    // the promise resolution includes a dispatch to set the page number of the data it just received
-    // this is what triggers the `<LoadingWrapper>` to stop rendering "LOADING" once the redux state has been rehydrated
     return +this.props.currentPage !== +parsedParams.page;
   }
 
   checkForClientRender(parsedParams) {
     if (Object.keys(this.props.apiDataWithParams).length && parsedParams) {
-      // if data already exists, but it doesn't match the route, need to fetch and re-render
+
       return +this.props.currentPage !== +parsedParams.page;
     }
     return Object.keys(this.props.apiDataWithParams).length === 0;
@@ -127,7 +103,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => {
   return {
     callApiFromClient(params) {
-      // dispatches async action (identical to the static loadData() function on the server)
+
       dispatch(getApiDataWithParams(params));
     },
   };

@@ -1,9 +1,3 @@
-/*
-  Home.js
-
-  Child route of <Base> located at `/`
-*/
-
 import React from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -16,8 +10,6 @@ class Home extends React.Component {
   }
 
   render() {
-    // Ok to use `<Link>` here now, since the parent component (`<Base>`)
-    // contains all router logic
     return (
       <div className="home-view">
         <h1>Home</h1>

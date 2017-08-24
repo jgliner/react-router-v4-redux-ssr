@@ -1,16 +1,3 @@
-/*
-  mockApi.js
-
-  To illustrate the point of server-side rendering without
-  having to account for confounding variables, `setTimeouts` are used
-  to represent external API calls. Normally, you'd use something like
-  `fetch`, `axios`, or `ajax` here.
-
-  This is also good for testing, since we can simulate how long API calls
-  will take to resolve
-*/
-
-// @TODO: random failure rates
 export const fetchFromApi = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -46,7 +33,7 @@ export const fetchFromApiWithParams = (params) => {
           'waldo',
         ],
       ];
-      // Ideally, these would be pre-allocated/counted via a db or memcache
+
       resolve({
         data: dataFromApi[params.page - 1],
         totalPages: 3,
@@ -56,9 +43,9 @@ export const fetchFromApiWithParams = (params) => {
 };
 
 export const fetchDynamicFromApi = (id) => {
-  // This `id` comes from `<DynamicPage>`'s `static loadData()` method
+
   return new Promise((resolve) => {
-    // same data structuring, different values
+
     setTimeout(() => {
       let param;
       switch (+id) {
