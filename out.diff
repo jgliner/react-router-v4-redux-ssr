@@ -1,0 +1,526 @@
+diff --git a/package.json b/package.json
+index e81e2a3..38ed4c2 100644
+--- a/package.json
++++ b/package.json
+@@ -4,7 +4,7 @@
+   "description": "Demo for SSR with rr@v4 and rrr@v5",
+   "scripts": {
+     "build": "webpack -p --optimize-minimize --define NODE_ENV=production",
+-    "dev": "rm -rf ./dist/* && NODE_ENV=development ENV_CONF=local PORT=3005 babel-node ./server/server.js",
++    "dev": "webpack-dev-server --config webpack.config.js --hot --history-api-fallback",
+     "prod": "NODE_ENV=production PORT=3005 node ./server/server.js",
+     "start": "rm -rf ./dist/* && npm run build && npm run prod"
+   },
+@@ -30,13 +30,10 @@
+     "react-dom": "^15.6.1",
+     "react-redux": "^5.0.5",
+     "react-router": "^4.1.2",
+-    "react-router-config": "^1.0.0-beta.3",
+     "react-router-dom": "^4.1.2",
+     "react-router-redux": "next",
+     "redux": "^3.7.2",
+-    "redux-devtools-extension": "^2.13.2",
+     "redux-thunk": "^2.2.0",
+-    "serialize-javascript": "^1.4.0",
+     "style-loader": "^0.18.2",
+     "webpack": "^3.3.0"
+   },
+@@ -45,9 +42,7 @@
+     "babel-plugin-transform-runtime": "^6.23.0",
+     "babel-preset-react-hmre": "^1.1.1",
+     "babel-runtime": "^6.25.0",
+-    "chokidar": "^1.7.0",
+     "react-transform-hmr": "^1.0.4",
+-    "webpack-dev-middleware": "^1.11.0",
+-    "webpack-hot-middleware": "^2.18.2"
++    "webpack-dev-server": "^2.7.1"
+   }
+ }
+diff --git a/public/favicon.ico b/public/favicon.ico
+new file mode 100644
+index 0000000..5c125de
+Binary files /dev/null and b/public/favicon.ico differ
+diff --git a/public/index.html b/public/index.html
+new file mode 100644
+index 0000000..e337d6b
+--- /dev/null
++++ b/public/index.html
+@@ -0,0 +1,12 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8">
++  <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
++  <title>Client-Side Only!</title>
++</head>
++<body>
++  <div id="root"></div>
++  <script type="text/javascript" src="main.js"></script>
++</body>
++</html>
+\ No newline at end of file
+diff --git a/public/index_prod.html b/public/index_prod.html
+new file mode 100644
+index 0000000..617e5e8
+--- /dev/null
++++ b/public/index_prod.html
+@@ -0,0 +1,13 @@
++<!DOCTYPE html>
++<html lang="en">
++<head>
++  <meta charset="UTF-8">
++  <link rel="stylesheet" type="text/css" href="./dist/main.css">
++  <link href="https://fonts.googleapis.com/css?family=Roboto:300" rel="stylesheet">
++  <title>Client Side Only!</title>
++</head>
++<body>
++  <div id="root"></div>
++  <script type="text/javascript" src="./dist/main.js"></script>
++</body>
++</html>
+\ No newline at end of file
+diff --git a/server/renderer.js b/server/renderer.js
+deleted file mode 100644
+index d6dfd9f..0000000
+--- a/server/renderer.js
++++ /dev/null
+@@ -1,113 +0,0 @@
+-import React from 'react';
+-import path from 'path';
+-import ReactDOMServer from 'react-dom/server';
+-import { Provider } from 'react-redux';
+-import { ConnectedRouter, push } from 'react-router-redux';
+-import { matchRoutes, renderRoutes } from 'react-router-config';
+-import serialize from 'serialize-javascript';
+-import qs from 'qs';
+-
+-import routes from '../src/routing/serverRoutes.js';
+-import configureStore from '../src/store.js';
+-
+-const renderFullPage = (html, preloadedState, bundle, env) => {
+-  return (`
+-    <!DOCTYPE html>
+-    <html lang="en">
+-      <head>
+-        <meta charSet="utf-8">
+-        <title>RR+RRR v4 Server-Side</title>
+-        <link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900' rel='stylesheet' type='text/css' />
+-        <link rel="icon" type="image/png" href="https://reacttraining.com/react-router/favicon-32x32.png" sizes="32x32">
+-        <link rel="icon" type="image/png" href="https://reacttraining.com/react-router/favicon-16x16.png" sizes="16x16">
+-        ${env === 'production' ? '<link rel="stylesheet" type="text/css" href="/dist/main.css">' : ''}
+-      </head>
+-      <body>
+-        <div id="root">
+-          <div>${html}</div>
+-        </div>
+-        <script>window.INITIAL_STATE = ${serialize(preloadedState)};</script>
+-        ${bundle}
+-      </body>
+-    </html>
+-  `);
+-};
+-
+-const normalizeAssets = (assets) => {
+-  return assets.reduce((acc, chunk) => {
+-    if (Array.isArray(chunk)) {
+-      chunk.forEach((chunklet) => {
+-        acc.push(chunklet);
+-      });
+-    }
+-    else {
+-      acc.push(chunk);
+-    }
+-    return acc;
+-  }, []);
+-};
+-
+-const concatDevBundle = (assetsByChunkName) => {
+-  return normalizeAssets([
+-    assetsByChunkName.main,
+-  ])
+-    .filter(path => path.endsWith('.js'))
+-    .map(path => `<script src="/${path}"></script>`)
+-    .join('\n');
+-};
+-
+-const loadRouteDependencies = (location, store) => {
+-
+-  const currentRoute = matchRoutes(routes, location);
+-
+-  const need = currentRoute.map(({ route, match }) => {
+-    if (route.component) {
+-      return route.component.loadData ?
+-
+-        route.component.loadData(
+-          store,
+-          match,
+-          location,
+-          qs.parse(match.params['0'], { ignoreQueryPrefix: true })
+-        ) :
+-        Promise.resolve(null);
+-    }
+-
+-    Promise.resolve(null);
+-  });
+-
+-  return Promise.all(need);
+-};
+-
+-const handleRender = (req, res) => {
+-  const { store, history } = configureStore({}, 'fromServer');
+-  store.dispatch(push(req.originalUrl)); // Need to find more elegant way to do this?
+-  loadRouteDependencies(req.originalUrl, store)
+-    .then((data) => {
+-      let bundle;
+-      if (process.env.NODE_ENV === 'development') {
+-        bundle = concatDevBundle(res.locals.webpackStats.toJson().assetsByChunkName);
+-      }
+-      else {
+-
+-        bundle = '<script src="/dist/main.js"></script>';
+-      }
+-      const toRender = ReactDOMServer.renderToString((
+-        <Provider store={store}>
+-          <ConnectedRouter history={history}>
+-            <div>
+-              {renderRoutes(routes, { ...data })}
+-            </div>
+-          </ConnectedRouter>
+-        </Provider>
+-      ));
+-      const preloadedState = store.getState();
+-
+-      res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));
+-    })
+-    .catch((err) => {
+-      console.error(err);
+-    });
+-};
+-
+-export { handleRender }; // eslint-disable-line
+diff --git a/server/server.js b/server/server.js
+index 2ea57dd..8c59839 100644
+--- a/server/server.js
++++ b/server/server.js
+@@ -1,62 +1,18 @@
+-require('babel-register');
+-require.extensions['.css'] = _ => _;
+-
+-const express = require('express');
+-const bodyParser = require('body-parser');
+ const morgan = require('morgan');
+-const rendering = require('./renderer.js');
+-const http = require('http');
+-
+-const PORT = process.env.PORT || 3005;
++const express = require('express');
++const path = require('path');
+ 
+ const app = express();
+-let server;
+ 
+-app.use(morgan('dev'));
+-app.use(bodyParser.json());
+-app.use(bodyParser.urlencoded({ extended: true }));
+-
+-if (process.env.NODE_ENV === 'development') {
+-  const chokidar = require('chokidar');
+-  const webpack = require('webpack');
+-  const webpackMiddleware = require('webpack-dev-middleware');
+-  const hotMiddleware = require('webpack-hot-middleware');
+-  const config = require('../webpack.config.js');
+-  const compiler = webpack(config);
++const PORT = process.env.PORT || 3005;
+ 
+-  app.use(hotMiddleware(compiler, {
+-    log: console.log,
+-    heartbeat: 10 * 1000,
+-  }));
+-  app.use(webpackMiddleware(compiler, {
+-    publicPath: config.output.publicPath,
+-    serverSideRender: true,
+-  }));
+-  const watcher = chokidar.watch('./');
++app.use(morgan('dev'));
++app.use('/dist', express.static('./dist'));
+ 
+-  watcher.on('ready', () => {
+-    watcher.on('all', () => {
+-      console.log('Clearing /server/ module cache from server');
+-      Object.keys(require.cache).forEach((id) => {
+-        if (/[\/\\]server[\/\\]/.test(id)) delete require.cache[id];
+-      });
+-    });
+-  });
+-  compiler.plugin('done', () => {
+-    console.log('Clearing /src/ module cache from server');
+-    Object.keys(require.cache).forEach((id) => {
+-      if (/[\/\\]src[\/\\]/.test(id)) delete require.cache[id];
+-    });
+-  });
+-}
+-else {
+-  app.use('/dist', express.static('./dist'));
+-}
+-app.use('*', rendering.handleRender);
++app.use('/', (req, res) => {
++  res.status(200).sendFile(path.resolve(__dirname, '../public/index_prod.html'));
++});
+ 
+-server = http.createServer(app);
+-server.listen(PORT, () => {
+-  console.log(` ⚙️  ${process.env.NODE_ENV.toUpperCase()} app listening @ ${PORT} ⚙️ \n`);
+-  console.log(` --  launched @ ${Date()}  --`);
+-  console.log('-------------------------------------------------------------------------------------\n\n');
++app.listen(PORT, () => {
++  console.log('Prod app listening on', PORT, '!');
+ });
+diff --git a/src/asyncActions.js b/src/asyncActions.js
+index 75dbfbc..6f8b01d 100644
+--- a/src/asyncActions.js
++++ b/src/asyncActions.js
+@@ -18,7 +18,6 @@ export function getApiDataWithParams(params) {
+     return api.fetchFromApiWithParams(params)
+       .then((res) => {
+         dispatch(syncActions.setapiDataWithParams(res));
+-
+         dispatch(syncActions.setApiDataCurrentPage(+params.page || 1));
+       })
+       .catch((err) => {
+diff --git a/src/containers/Base.js b/src/containers/Base.js
+index 22adb68..aa93742 100644
+--- a/src/containers/Base.js
++++ b/src/containers/Base.js
+@@ -7,7 +7,6 @@ import BaseRoutes from '../routing/BaseRoutes.js';
+ import './container-styles/Base.css';
+ 
+ class Base extends React.Component {
+-
+   constructor(props) {
+     super(props);
+ 
+diff --git a/src/index.js b/src/index.js
+index 727f625..e3139d1 100644
+--- a/src/index.js
++++ b/src/index.js
+@@ -9,11 +9,9 @@ import Base from './containers/Base.js';
+ 
+ import configureStore from './store.js';
+ 
+-const initialState = window.INITIAL_STATE || {};
+-delete window.INITIAL_STATE;
+-
+ const render = () => {
+-  const { history, store } = configureStore(initialState);
++  const { history, store } = configureStore();
++
+   ReactDOM.render((
+     <Provider store={store}>
+       <ConnectedRouter history={history}>
+@@ -26,3 +24,7 @@ const render = () => {
+ };
+ 
+ render();
++
++if (module.hot) {
++  module.hot.accept('./containers/Base.js', () => { render() });
++}
+diff --git a/src/routing/serverRoutes.js b/src/routing/serverRoutes.js
+deleted file mode 100644
+index 8e8b37d..0000000
+--- a/src/routing/serverRoutes.js
++++ /dev/null
+@@ -1,39 +0,0 @@
+-import Base from '../containers/Base.js';
+-
+-import Home from '../views/Home.js';
+-import StaticPage from '../views/StaticPage.js';
+-import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps.js';
+-import StaticDataDepsParams from '../views/StaticDataDepsParams.js';
+-import DynamicPage from '../views/DynamicPage.js';
+-
+-// structure in /src/routing/BaseRoutes.js
+-const routes = [
+-  {
+-    component: Base,
+-    routes: [
+-      {
+-        path: '/',
+-        exact: true,
+-        component: Home,
+-      },
+-      {
+-        path: '/static',
+-        component: StaticPage,
+-      },
+-      {
+-        path: '/plusDataDeps',
+-        component: StaticPageWithDataDeps,
+-      },
+-      {
+-        path: '/dataDepsParams(.*)?',
+-        component: StaticDataDepsParams,
+-      },
+-      {
+-        path: '/dynamic/:id',
+-        component: DynamicPage,
+-      },
+-    ],
+-  },
+-];
+-
+-export default routes;
+diff --git a/src/store.js b/src/store.js
+index d245eff..0830f6d 100644
+--- a/src/store.js
++++ b/src/store.js
+@@ -1,32 +1,23 @@
+ import { createStore, combineReducers, applyMiddleware } from 'redux';
+-import { routerMiddleware, routerReducer } from 'react-router-redux';
+-import { composeWithDevTools } from 'redux-devtools-extension';
++import { routerReducer } from 'react-router-redux';
+ import thunk from 'redux-thunk';
+ 
+ import createBrowserHistory from 'history/createBrowserHistory';
+-import createMemoryHistory from 'history/createMemoryHistory';
+ 
+ import reducers from './reducers';
+ 
+-export default function configureStore(initialState = {}, fromServer) {
++export default function configureStore() {
+   let history;
++  history = createBrowserHistory();
+ 
+-  if (fromServer) {
+-    history = createMemoryHistory();
+-  }
+-  else {
+-    history = createBrowserHistory();
+-  }
+-  const initializedRouterMW = routerMiddleware(history);
+-  const middleware = composeWithDevTools(applyMiddleware(initializedRouterMW, thunk));
++  const middleware = applyMiddleware(thunk);
+ 
+   const store = createStore(combineReducers({
+     ...reducers,
+     router: routerReducer,
+-  }), initialState, middleware);
++  }), middleware);
+ 
+   if (process.env.NODE_ENV === 'development') {
+-
+     if (module.hot) {
+       console.log('HMR Reducers Accepted');
+       module.hot.accept('./reducers', () => store.replaceReducer(require('./reducers')));
+diff --git a/src/views/DynamicPage.js b/src/views/DynamicPage.js
+index b86502f..a1fd74f 100644
+--- a/src/views/DynamicPage.js
++++ b/src/views/DynamicPage.js
+@@ -9,10 +9,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+ import './view-styles/DynamicPage.css';
+ 
+ class DynamicPage extends React.Component {
+-  static loadData(store, match) {
+-    return store.dispatch(getDynamicApiData(match.params.id));
+-  }
+-
+   constructor(props) {
+     super(props);
+ 
+diff --git a/src/views/StaticDataDepsParams.js b/src/views/StaticDataDepsParams.js
+index 72cb54e..c81ec1f 100644
+--- a/src/views/StaticDataDepsParams.js
++++ b/src/views/StaticDataDepsParams.js
+@@ -10,10 +10,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+ import './view-styles/StaticDataDepsParams.css';
+ 
+ class StaticDataDepsParams extends React.Component {
+-  static loadData(store, match, url, params) {
+-    return store.dispatch(getApiDataWithParams(params));
+-  }
+-
+   constructor(props) {
+     super(props);
+ 
+@@ -43,7 +39,6 @@ class StaticDataDepsParams extends React.Component {
+ 
+   checkForClientRender(parsedParams) {
+     if (Object.keys(this.props.apiDataWithParams).length && parsedParams) {
+-
+       return +this.props.currentPage !== +parsedParams.page;
+     }
+     return Object.keys(this.props.apiDataWithParams).length === 0;
+@@ -103,7 +98,6 @@ const mapStateToProps = state => ({
+ const mapDispatchToProps = (dispatch) => {
+   return {
+     callApiFromClient(params) {
+-
+       dispatch(getApiDataWithParams(params));
+     },
+   };
+diff --git a/src/views/StaticPageWithDataDeps.js b/src/views/StaticPageWithDataDeps.js
+index c0caa9e..5701bc7 100644
+--- a/src/views/StaticPageWithDataDeps.js
++++ b/src/views/StaticPageWithDataDeps.js
+@@ -9,10 +9,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+ import './view-styles/StaticPageWithDataDeps.css';
+ 
+ class StaticPageWithDataDeps extends React.Component {
+-  static loadData(store) {
+-    return store.dispatch(getApiData());
+-  }
+-
+   constructor(props) {
+     super(props);
+ 
+@@ -63,7 +59,6 @@ const mapStateToProps = (state) => ({
+ const mapDispatchToProps = (dispatch) => {
+   return {
+     callApiFromClient() {
+-
+       dispatch(getApiData());
+     },
+   };
+diff --git a/webpack.config.js b/webpack.config.js
+index 34ad04a..a0f90ca 100644
+--- a/webpack.config.js
++++ b/webpack.config.js
+@@ -9,6 +9,7 @@ const main = ['./src/index.js'];
+ let plugins = [];
+ let cssLoaders = [];
+ let handleJS = {};
++let devServer = {};
+ 
+ if (process.argv.includes('NODE_ENV=production')) {
+ 
+@@ -47,9 +48,13 @@ if (process.argv.includes('NODE_ENV=production')) {
+ }
+ else {
+   console.log('Preparing dev server...\n\n');
+-  main.push('./server/renderer.js');
+   main.unshift('webpack-hot-middleware/client');
+ 
++  devServer = {
++    contentBase: path.join(__dirname, 'public'),
++    port: 3005,
++  };
++
+   plugins = [
+     new webpack.optimize.OccurrenceOrderPlugin(),
+     new webpack.HotModuleReplacementPlugin(),
+@@ -74,7 +79,6 @@ else {
+     loader: 'babel-loader',
+     include: [
+       path.join(__dirname, 'src'),
+-      path.join(__dirname, 'server/renderer.js')
+     ],
+     query: {
+       env: {
+@@ -102,6 +106,7 @@ module.exports = {
+   entry: {
+     main,
+   },
++  devServer,
+   module: {
+     rules: [
+       handleJS,
