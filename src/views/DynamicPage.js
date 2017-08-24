@@ -9,10 +9,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
 import './view-styles/DynamicPage.css';
 
 class DynamicPage extends React.Component {
-  static loadData(store, match) {
-    return store.dispatch(getDynamicApiData(match.params.id));
-  }
-
   constructor(props) {
     super(props);
 

@@ -9,11 +9,9 @@ import Base from './containers/Base.js';
 
 import configureStore from './store.js';
 
-const initialState = window.INITIAL_STATE || {};
-delete window.INITIAL_STATE;
-
 const render = () => {
-  const { history, store } = configureStore(initialState);
+  const { history, store } = configureStore();
+
   ReactDOM.render((
     <Provider store={store}>
       <ConnectedRouter history={history}>
@@ -26,3 +24,7 @@ const render = () => {
 };
 
 render();
+
+if (module.hot) {
+  module.hot.accept('./containers/Base.js', () => { render() });
+}

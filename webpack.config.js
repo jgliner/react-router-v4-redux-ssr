@@ -9,6 +9,7 @@ const main = ['./src/index.js'];
 let plugins = [];
 let cssLoaders = [];
 let handleJS = {};
+let devServer = {};
 
 if (process.argv.includes('NODE_ENV=production')) {
 
@@ -47,8 +48,12 @@ if (process.argv.includes('NODE_ENV=production')) {
 }
 else {
   console.log('Preparing dev server...\n\n');
-  main.push('./server/renderer.js');
   main.unshift('webpack-hot-middleware/client');
+
+  devServer = {
+    contentBase: path.join(__dirname, 'public'),
+    port: 3005,
+  };
 
   plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -74,7 +79,6 @@ else {
     loader: 'babel-loader',
     include: [
       path.join(__dirname, 'src'),
-      path.join(__dirname, 'server/renderer.js')
     ],
     query: {
       env: {
@@ -102,6 +106,7 @@ module.exports = {
   entry: {
     main,
   },
+  devServer,
   module: {
     rules: [
       handleJS,

@@ -9,10 +9,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
 import './view-styles/StaticPageWithDataDeps.css';
 
 class StaticPageWithDataDeps extends React.Component {
-  static loadData(store) {
-    return store.dispatch(getApiData());
-  }
-
   constructor(props) {
     super(props);
 
@@ -63,7 +59,6 @@ const mapStateToProps = (state) => ({
 const mapDispatchToProps = (dispatch) => {
   return {
     callApiFromClient() {
-
       dispatch(getApiData());
     },
   };

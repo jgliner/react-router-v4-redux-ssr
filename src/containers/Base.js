@@ -7,7 +7,6 @@ import BaseRoutes from '../routing/BaseRoutes.js';
 import './container-styles/Base.css';
 
 class Base extends React.Component {
-
   constructor(props) {
     super(props);
 

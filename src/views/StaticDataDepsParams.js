@@ -10,10 +10,6 @@ import LoadingWrapper from '../component-utils/LoadingWrapper.js';
 import './view-styles/StaticDataDepsParams.css';
 
 class StaticDataDepsParams extends React.Component {
-  static loadData(store, match, url, params) {
-    return store.dispatch(getApiDataWithParams(params));
-  }
-
   constructor(props) {
     super(props);
 
@@ -43,7 +39,6 @@ class StaticDataDepsParams extends React.Component {
 
   checkForClientRender(parsedParams) {
     if (Object.keys(this.props.apiDataWithParams).length && parsedParams) {
-
       return +this.props.currentPage !== +parsedParams.page;
     }
     return Object.keys(this.props.apiDataWithParams).length === 0;
@@ -103,7 +98,6 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = (dispatch) => {
   return {
     callApiFromClient(params) {
-
       dispatch(getApiDataWithParams(params));
     },
   };

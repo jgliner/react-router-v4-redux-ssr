@@ -18,7 +18,6 @@ export function getApiDataWithParams(params) {
     return api.fetchFromApiWithParams(params)
       .then((res) => {
         dispatch(syncActions.setapiDataWithParams(res));
-
         dispatch(syncActions.setApiDataCurrentPage(+params.page || 1));
       })
       .catch((err) => {

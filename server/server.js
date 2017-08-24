@@ -1,62 +1,18 @@
-require('babel-register');
-require.extensions['.css'] = _ => _;
-
-const express = require('express');
-const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const rendering = require('./renderer.js');
-const http = require('http');
+const express = require('express');
+const path = require('path');
+
+const app = express();
 
 const PORT = process.env.PORT || 3005;
 
-const app = express();
-let server;
-
 app.use(morgan('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/dist', express.static('./dist'));
 
-if (process.env.NODE_ENV === 'development') {
-  const chokidar = require('chokidar');
-  const webpack = require('webpack');
-  const webpackMiddleware = require('webpack-dev-middleware');
-  const hotMiddleware = require('webpack-hot-middleware');
-  const config = require('../webpack.config.js');
-  const compiler = webpack(config);
+app.use('/', (req, res) => {
+  res.status(200).sendFile(path.resolve(__dirname, '../public/index_prod.html'));
+});
 
-  app.use(hotMiddleware(compiler, {
-    log: console.log,
-    heartbeat: 10 * 1000,
-  }));
-  app.use(webpackMiddleware(compiler, {
-    publicPath: config.output.publicPath,
-    serverSideRender: true,
-  }));
-  const watcher = chokidar.watch('./');
-
-  watcher.on('ready', () => {
-    watcher.on('all', () => {
-      console.log('Clearing /server/ module cache from server');
-      Object.keys(require.cache).forEach((id) => {
-        if (/[\/\\]server[\/\\]/.test(id)) delete require.cache[id];
-      });
-    });
-  });
-  compiler.plugin('done', () => {
-    console.log('Clearing /src/ module cache from server');
-    Object.keys(require.cache).forEach((id) => {
-      if (/[\/\\]src[\/\\]/.test(id)) delete require.cache[id];
-    });
-  });
-}
-else {
-  app.use('/dist', express.static('./dist'));
-}
-app.use('*', rendering.handleRender);
-
-server = http.createServer(app);
-server.listen(PORT, () => {
-  console.log(` ⚙️  ${process.env.NODE_ENV.toUpperCase()} app listening @ ${PORT} ⚙️ \n`);
-  console.log(` --  launched @ ${Date()}  --`);
-  console.log('-------------------------------------------------------------------------------------\n\n');
+app.listen(PORT, () => {
+  console.log('Prod app listening on', PORT, '!');
 });
