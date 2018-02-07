@@ -1,5 +1,5 @@
 /*
-  actions.js
+  actions.ts
 
   Standard `redux` config, dispatches actions for updating the state tree
 */

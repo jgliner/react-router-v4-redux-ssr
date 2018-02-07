@@ -1,5 +1,6 @@
+import { Param } from './models/param';
 /*
-  mockApi.js
+  mockApi.ts
 
   To illustrate the point of server-side rendering without
   having to account for confounding variables, `setTimeouts` are used
@@ -60,28 +61,31 @@ export const fetchDynamicFromApi = (id) => {
   return new Promise((resolve) => {
     // same data structuring, different values
     setTimeout(() => {
-      let param;
+      let param: Param;
       switch (+id) {
         case 1:
           param = {
+            id,
             shape: 'circle',
             word: 'foo',
           };
           break;
         case 2:
           param = {
+            id,
             shape: 'square',
             word: 'bar',
           };
           break;
         case 3:
           param = {
+            id,
             shape: 'rectangle',
             word: 'baz',
           };
           break;
         default:
-          param = {};
+          param = {id};
           break;
       }
       resolve(param);

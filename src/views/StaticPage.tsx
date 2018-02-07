@@ -1,5 +1,5 @@
 /*
-  StaticPage.js
+  StaticPage.tsx
 
   Child route of <Base> located at `/static`
 
@@ -9,13 +9,17 @@
     - No children
 */
 
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
+import * as React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
+import { connect, DispatchProp } from 'react-redux';
 
 import './view-styles/StaticPage.css';
 
-class StaticPage extends React.Component {
+interface IProps extends DispatchProp<any>, RouteComponentProps<any> {
+  // location: history.Location;
+}
+
+class StaticPage extends React.Component<IProps> {
   constructor(props) {
     super(props);
   }

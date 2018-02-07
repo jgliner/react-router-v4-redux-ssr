@@ -1,20 +1,20 @@
 /*
-  serverRoutes.js
+  serverRoutes.ts
 
   Used instead of <Route> in `react-router-config` on the server.
   Compatible with `react-router-redux`'s `<ConnectedRouter>`
 */
 
-import Base from '../containers/Base.js';
+import Base from '../containers/Base';
 
-import Home from '../views/Home.js';
-import StaticPage from '../views/StaticPage.js';
-import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps.js';
-import StaticDataDepsParams from '../views/StaticDataDepsParams.js';
-import DynamicPage from '../views/DynamicPage.js';
+import Home from '../views/Home';
+import StaticPage from '../views/StaticPage';
+import StaticPageWithDataDeps from '../views/StaticPageWithDataDeps';
+import StaticDataDepsParams from '../views/StaticDataDepsParams';
+import DynamicPage from '../views/DynamicPage';
 
 // Fairly straightforward object nesting, should mirror `<BaseRoute>`
-// structure in /src/routing/BaseRoutes.js
+// structure in /src/routing/BaseRoutes.ts
 const routes = [
   {
     component: Base,

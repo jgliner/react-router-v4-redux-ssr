@@ -1,5 +1,5 @@
 /*
-  reducers.js
+  reducers.ts
 
   Standard `redux` config
   This is the only place where the state can be altered.

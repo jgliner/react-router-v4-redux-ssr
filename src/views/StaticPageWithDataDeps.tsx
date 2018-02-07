@@ -1,5 +1,5 @@
 /*
-  StaticPageWithDataDeps.js
+  StaticPageWithDataDeps.tsx
 
   Child route of <Base> located at `/plusDataDeps`
 
@@ -9,19 +9,24 @@
     - No children
 */
 
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import * as React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { getApiData } from '../asyncActions.js';
+import { getApiData } from '../asyncActions';
 
-import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+import LoadingWrapper from '../component-utils/LoadingWrapper';
 
 import './view-styles/StaticPageWithDataDeps.css';
 
-class StaticPageWithDataDeps extends React.Component {
+interface IProps {
+  apiData: any;
+  callApiFromClient: Function;
+}
+
+class StaticPageWithDataDeps extends React.Component<IProps & RouteComponentProps<any>> {
   static loadData(store) {
-    // this method is called in `loadRouteDependencies()` in /server/renderer.js
+    // this method is called in `loadRouteDependencies()` in /server/renderer.ts
     // and will block the server from rendering until the data is returned...
     // it will throw a 500 if the data is not resolved or if there is a timeout
 
@@ -59,7 +64,7 @@ class StaticPageWithDataDeps extends React.Component {
 
     // the same criteria we used to check if the client side needed to fetch/render
     // is also used to see if the data is still loading - pass this status into
-    // <LoadingWrapper> (located in /src/component-utils/LoadingWrapper.js)
+    // <LoadingWrapper> (located in /src/component-utils/LoadingWrapper.ts)
     const loading = this.checkForClientRender();
     return (
       <div className="static-data-view">
@@ -80,11 +85,11 @@ class StaticPageWithDataDeps extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state): Partial<IProps> => ({
   apiData: state.apiData,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch): Partial<IProps> => {
   return {
     callApiFromClient() {
       // dispatches async action (identical to the static loadData() function on the server)
