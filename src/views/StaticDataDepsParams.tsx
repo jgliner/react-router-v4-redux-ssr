@@ -1,5 +1,5 @@
 /*
-  StaticDataDepsParams.js
+  StaticDataDepsParams.tsx
 
   Child route of <Base> located at `/dataDepsParams`
 
@@ -10,19 +10,27 @@
     - Query params
 */
 
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import * as React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
-import qs from 'qs';
+import * as qs from 'qs';
 
-import { getApiDataWithParams } from '../asyncActions.js';
+import { getApiDataWithParams } from '../asyncActions';
 
-import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+import LoadingWrapper from '../component-utils/LoadingWrapper';
 
 import './view-styles/StaticDataDepsParams.css';
 
-class StaticDataDepsParams extends React.Component {
+interface IProps {
+  apiDataWithParams: any;
+  callApiFromClient: Function;
+  currentPage: any;
+}
+
+class StaticDataDepsParams extends React.Component<IProps & RouteComponentProps<any>> {
   static loadData(store, match, url, params) {
+    console.log(match);
+    console.log(url);
     // see /src/views/StaticPageWithDataDeps for more info on this
 
     return store.dispatch(getApiDataWithParams(params));
@@ -119,12 +127,12 @@ class StaticDataDepsParams extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state): Partial<IProps> => ({
   apiDataWithParams: state.apiDataWithParams,
   currentPage: state.currentPage,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch): Partial<IProps> => {
   return {
     callApiFromClient(params) {
       // dispatches async action (identical to the static loadData() function on the server)

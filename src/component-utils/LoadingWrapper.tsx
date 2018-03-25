@@ -1,12 +1,12 @@
 /*
-  LoadingWrapper.js
+  LoadingWrapper.tsx
 
   Standalone "dumb" component that either returns a loading message,
   or the children located within `<LoadingWrapper>` tags based on the status
   passed in
 */
 
-import React from 'react';
+import * as React from 'react';
 
 function LoadingWrapper({ isLoading, children }) {
   return isLoading ? (

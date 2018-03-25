@@ -5,13 +5,13 @@ const path = require('path');
 
 console.log('\ncurrent pathname is:\n', path.resolve(__dirname, 'dist'), '\n');
 
-const main = ['./src/index.js'];
+const main = ['./src/index.tsx'];
 let plugins = [];
 let cssLoaders = [];
-let handleJS = {};
+// let handleJS = {};
 
 if (process.argv.includes('NODE_ENV=production')) {
-  // Production bundle includes ExtractText to prevent FOUC 
+  // Production bundle includes ExtractText to prevent FOUC
   console.log('Bundling for production...\n\n');
   plugins = [
     new webpack.optimize.OccurrenceOrderPlugin(),
@@ -33,22 +33,11 @@ if (process.argv.includes('NODE_ENV=production')) {
     fallback: 'style-loader',
     use: 'css-loader',
   });
-
-  handleJS = {
-    test: /\.js$/,
-    exclude: /(node_modules)/,
-    use: {
-      loader: 'babel-loader',
-      options: {
-        presets: ['env', 'es2015', 'stage-0', 'react'],
-      },
-    },
-  };
 }
 else {
   // Dev bundle includes HMR
   console.log('Preparing dev server...\n\n');
-  main.push('./server/renderer.js');
+  main.push('./server/renderer.tsx');
   main.unshift('webpack-hot-middleware/client');
 
   plugins = [
@@ -69,33 +58,6 @@ else {
     'style-loader',
     'css-loader',
   ];
-
-  handleJS = {
-    test: /\.js$/,
-    loader: 'babel-loader',
-    include: [
-      path.join(__dirname, 'src'),
-      path.join(__dirname, 'server/renderer.js')
-    ],
-    query: {
-      env: {
-        development: {
-          presets: ['react-hmre'],
-          plugins: [
-            [
-              'react-transform', {
-                transforms: [{
-                  transform: 'react-transform-hmr',
-                  imports: ['react'],
-                  locals: ['module'],
-                }],
-              },
-            ],
-          ],
-        },
-      },
-    },
-  };
 }
 
 // Standard webpack config... nothing too fancy
@@ -106,7 +68,14 @@ module.exports = {
   },
   module: {
     rules: [
-      handleJS,
+      {
+        test: /\.tsx?$/,
+        use: [
+          {
+            loader: 'awesome-typescript-loader'
+          }
+        ]
+      },
       {
         test: /\.css$/,
         use: cssLoaders,
@@ -131,4 +100,8 @@ module.exports = {
     publicPath: '/',
     filename: '[name].js',
   },
+  resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.json', '.jsx', '.css', 'scss'],
+    modules: ['node_modules'],
+  }
 };

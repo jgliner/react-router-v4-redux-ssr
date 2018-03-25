@@ -1,5 +1,5 @@
 /*
-  store.js
+  store.ts
 
   Configure redux store
 

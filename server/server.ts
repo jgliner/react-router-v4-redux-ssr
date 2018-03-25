@@ -1,5 +1,5 @@
 /*
-  app.js
+  app.ts
 
   Express server
 */
@@ -11,8 +11,9 @@ require.extensions['.css'] = _ => _;
 const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const rendering = require('./renderer.js');
 const http = require('http');
+
+const rendering = require('./renderer');
 
 const PORT = process.env.PORT || 3005;
 
@@ -31,7 +32,7 @@ if (process.env.NODE_ENV === 'development') {
   const webpack = require('webpack');
   const webpackMiddleware = require('webpack-dev-middleware');
   const hotMiddleware = require('webpack-hot-middleware');
-  const config = require('../webpack.config.js');
+  const config = require('../webpack.config.ts');
   const compiler = webpack(config);
 
   app.use(hotMiddleware(compiler, {
@@ -79,7 +80,8 @@ app.use('*', rendering.handleRender);
 
 server = http.createServer(app);
 server.listen(PORT, () => {
-  console.log(` ⚙️  ${process.env.NODE_ENV.toUpperCase()} app listening @ ${PORT} ⚙️ \n`);
+
+  console.log(` ⚙️  ${process.env.NODE_ENV} app listening @ ${PORT} ⚙️ \n`);
   console.log(` --  launched @ ${Date()}  --`);
   console.log('-------------------------------------------------------------------------------------\n\n');
 });

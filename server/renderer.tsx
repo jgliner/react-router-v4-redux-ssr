@@ -1,22 +1,21 @@
 /*
-  renderer.js
+  renderer.ts
 
   Responsible for server-side rendering and fetching
   appropriate assets for a given route
 
   Starts at `Function handleRender()`, called by the server
 */
-import React from 'react';
-import path from 'path';
-import ReactDOMServer from 'react-dom/server';
+import * as React from 'react';
+import * as ReactDOMServer from 'react-dom/server';
 import { Provider } from 'react-redux';
 import { ConnectedRouter, push } from 'react-router-redux';
 import { matchRoutes, renderRoutes } from 'react-router-config';
-import serialize from 'serialize-javascript';
-import qs from 'qs';
+import * as serialize from 'serialize-javascript';
+import * as qs from 'qs';
 
-import routes from '../src/routing/serverRoutes.js';
-import configureStore from '../src/store.js';
+import routes from '../src/routing/serverRoutes';
+import configureStore from '../src/store';
 
 const renderFullPage = (html, preloadedState, bundle, env) => {
   // the raw markup that the client will receive
@@ -101,7 +100,7 @@ const loadRouteDependencies = (location, store) => {
 const handleRender = (req, res) => {
   // start here
 
-  // --> /src/store.js
+  // --> /src/store.ts
   const { store, history } = configureStore({}, 'fromServer');
 
   // once `store` is configured, dispatch the proper route into
@@ -143,7 +142,7 @@ const handleRender = (req, res) => {
       // to send to the client so it can pick up where the server left off
       const preloadedState = store.getState();
 
-      // --> /index.js
+      // --> /index.ts
       res.status(200).send(renderFullPage(toRender, preloadedState, bundle, process.env.NODE_ENV));
     })
     .catch((err) => {

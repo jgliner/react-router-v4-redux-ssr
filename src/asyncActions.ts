@@ -1,12 +1,14 @@
 /*
-  asyncActions.js
+  asyncActions.ts
 
   Uses redux `thunk` to dispatch events asynchronously
-  Once a promise is resolved, the results are set synchronously in `/src/actions.js`
+  Once a promise is resolved, the results are set synchronously in `/src/actions.ts`
 */
 
-import * as api from './mockApi.js';
-import * as syncActions from './actions.js';
+// import { Param } from './models/param';
+
+import * as api from './mockApi';
+import * as syncActions from './actions';
 
 export function getApiData() {
   return (dispatch) => {
@@ -41,7 +43,7 @@ export function getApiDataWithParams(params) {
 export function getDynamicApiData(id) {
   return (dispatch) => {
     return api.fetchDynamicFromApi(id)
-      .then((res) => {
+      .then((res: any) => {
         // inject route for state transitions - another one of the many ways to check for updates
         // that may require fetching
         res.id = id;

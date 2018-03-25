@@ -1,21 +1,27 @@
 /*
-  Base.js
+  Base.tsx
 
   The "root" component that persists throughout the app,
   contains client router logic
 */
 
-import React from 'react';
-import { withRouter } from 'react-router-dom';
-import { connect } from 'react-redux';
+import * as React from 'react';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { connect, DispatchProp } from 'react-redux';
 
-import BaseRoutes from '../routing/BaseRoutes.js';
+import BaseRoutes from '../routing/BaseRoutes';
 
 import './container-styles/Base.css';
 
-class Base extends React.Component {
+interface IProps extends DispatchProp<any>, RouteComponentProps<any> {
+
+}
+
+class Base extends React.Component<IProps> {
+  private renderCount: number;
+
   // No data to fetch, no static method needed
-  constructor(props) {
+  constructor(props: IProps) {
     super(props);
 
     // good for debugging - avoid excessive rendering
@@ -26,11 +32,11 @@ class Base extends React.Component {
     this.renderCount++;
     console.log('RENDERS:', this.renderCount)
 
-    // --> /src/routing/BaseRoutes.js
+    // --> /src/routing/BaseRoutes.ts
     return (
       <div className="app-base">
         <h1>Base</h1>
-        <BaseRoutes location={this.props.location} />
+        <BaseRoutes {...this.props} />
       </div>
     );
   }

@@ -1,5 +1,5 @@
 /*
-  DynamicPage.js
+  DynamicPage.tsx
 
   Child route of <Base> located at `/dynamic/:id`
 
@@ -11,17 +11,22 @@
   Will 404 if `/dynamic` is requested without an id
 */
 
-import React from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import * as React from 'react';
+import { Link, RouteComponentProps, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import { getDynamicApiData } from '../asyncActions.js';
+import { getDynamicApiData } from '../asyncActions';
 
-import LoadingWrapper from '../component-utils/LoadingWrapper.js';
+import LoadingWrapper from '../component-utils/LoadingWrapper';
 
 import './view-styles/DynamicPage.css';
 
-class DynamicPage extends React.Component {
+interface IProps {
+  callApiFromClient: Function;
+  dynamicApiData: any;
+}
+
+class DynamicPage extends React.Component<IProps & RouteComponentProps<any>> {
   static loadData(store, match) {
     // See /src/views/StaticPageWithDataDeps for details on `static loadData()`
 
@@ -75,11 +80,11 @@ class DynamicPage extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => ({
+const mapStateToProps = (state): Partial<IProps> => ({
   dynamicApiData: state.dynamicApiData,
 });
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = (dispatch): Partial<IProps> => {
   return {
     callApiFromClient(id) {
       // dispatches async action (identical to the static loadData() function on the server)
