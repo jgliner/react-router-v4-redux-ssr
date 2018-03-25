@@ -28,6 +28,7 @@ class Home extends React.Component {
           <br />
           <Link to="/static">Static Page Example</Link>
           <Link to="/plusDataDeps">Static Route + External Data Example</Link>
+          <Link to="/plusImage">Static Route + Image Example</Link>
           <br />
           <b>Static + Query Params</b>
           <ul>

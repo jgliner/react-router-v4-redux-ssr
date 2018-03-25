@@ -1,0 +1,14 @@
+.static-plus-img-view {
+  padding: 40px;
+  background-color: #0EBBEC;
+}
+.img-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.static-plus-img-view img {
+  height: 150px;
+  width: 150px;
+}

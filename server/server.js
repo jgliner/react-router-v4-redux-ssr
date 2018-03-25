@@ -13,6 +13,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const rendering = require('./renderer.js');
 const http = require('http');
+const path = require('path');
 
 const PORT = process.env.PORT || 3005;
 
@@ -22,6 +23,7 @@ let server;
 app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use('/assets', express.static(path.join(__dirname, '../assets/')));
 
 if (process.env.NODE_ENV === 'development') {
   // Only necessary in dev...
